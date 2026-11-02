@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduManage — Class Management System Presentation</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .slide-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 960px;
+      min-height: 580px;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .slide-header {
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 9999px;
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .slide-footer {
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    button:hover { background: var(--primary-dark); }
+    button:disabled { background: #cbd5e1; cursor: not-allowed; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+    .card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card h3 { font-size: 1.1rem; color: #1e293b; margin-bottom: 0.5rem; }
+    .card p, .card li { font-size: 0.92rem; color: #475569; }
+    ul { padding-left: 1.25rem; }
+    li { margin-bottom: 0.5rem; }
+    .highlight { color: var(--primary); font-weight: 600; }
+    .pill { display: inline-block; background: #e0e7ff; color: #3730a3; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; margin-right: 0.25rem; }
+    pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: monospace;
+      overflow-x: auto;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide-container">
+  <div id="slideContent"></div>
+
+  <div class="slide-footer">
+    <div id="slideCounter">Slide 1 of 10</div>
+    <div>Use <strong>Left / Right Arrow Keys</strong> or Buttons to Navigate</div>
+    <div class="controls">
+      <button id="prevBtn" onclick="prevSlide()">← Previous</button>
+      <button id="nextBtn" onclick="nextSlide()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = [
+  {
+    badge: "College Project Viva",
+    title: "EduManage — Class Management System",
+    subtitle: "Full-Stack Web Application for Academic Management",
+    content: `
+      <div style="margin-top: 1.5rem;" class="card">
+        <h3 style="color: #2563eb; font-size: 1.3rem;">Presentation Details</h3>
+        <p style="margin: 0.5rem 0;"><strong>Presenter:</strong> Kirpal Singh</p>
+        <p style="margin: 0.5rem 0;"><strong>Roll Number:</strong> 2421217</p>
+        <p style="margin: 0.5rem 0;"><strong>Course:</strong> Information Technology (IT)</p>
+        <p style="margin: 0.5rem 0;"><strong>Technology Stack:</strong> MongoDB, Express.js, React, Node.js (MERN)</p>
+      </div>
+    `
+  },
+  {
+    badge: "Problem & Objectives",
+    title: "Why Class Management System?",
+    subtitle: "Addressing Classroom Inefficiencies & Fragmentation",
+    content: `
+      <div class="grid">
+        <div class="card">
+          <h3>The Problem</h3>
+          <ul>
+            <li>Manual attendance registers are prone to errors and calculation delays.</li>
+            <li>Study materials, worksheets, and notices get buried in messaging apps.</li>
+            <li>Students have no real-time way to know if they meet the 75% exam attendance threshold.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>The Solution</h3>
+          <ul>
+            <li>Centralized portal with separate Teacher and Student logins.</li>
+            <li>Automated attendance calculations and duplicate prevention.</li>
+            <li>Targeted coursework distribution with protected attachments.</li>
+            <li>Clear, student-friendly visibility without unnecessary complexity.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Architecture",
+    title: "System Architecture & Stack",
+    subtitle: "Clean, Maintainable 3-Tier Web Architecture",
+    content: `
+      <div class="grid">
+        <div class="card">
+          <h3>Frontend (Client)</h3>
+          <p><strong>React 18 & Vite:</strong> Declarative components, fast reloading.</p>
+          <p><strong>Tailwind CSS v4:</strong> Clean, natural UI design.</p>
+          <p><strong>React Router DOM:</strong> Role-based protected routes.</p>
+          <p><strong>Axios:</strong> HTTP requests with JWT Authorization interceptor.</p>
+        </div>
+        <div class="card">
+          <h3>Backend & Database</h3>
+          <p><strong>Node.js & Express:</strong> REST API architecture.</p>
+          <p><strong>MongoDB & Mongoose:</strong> Document database with unique indexing.</p>
+          <p><strong>Bcryptjs:</strong> 12-round salted password hashing.</p>
+          <p><strong>Multer:</strong> Safe server-side file upload handling.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Teacher Portal",
+    title: "Teacher Capabilities",
+    subtitle: "Classroom Governance & Student Roster",
+    content: `
+      <ul>
+        <li><strong>Class Management:</strong> Create, edit, and delete classes; manage student roster.</li>
+        <li><strong>Student Directory:</strong> Search students by name or roll number; add new student accounts.</li>
+        <li><strong>Attendance Marking:</strong> Select date, single-click "Mark All Present", or mark Absent with automatic deduplication.</li>
+        <li><strong>Coursework Publishing:</strong> Upload Assignments, Classwork, Notes, and Projects with attachments up to 10 MB.</li>
+        <li><strong>Notice Board:</strong> Post urgent announcements targeted to specific classes.</li>
+      </ul>
+    `
+  },
+  {
+    badge: "Student Portal",
+    title: "Student Experience (Kirpal Singh)",
+    subtitle: "Designed for Clear, Simple Coursework & Attendance Access",
+    content: `
+      <div class="card" style="margin-bottom: 1rem;">
+        <h3>Configured Student Profile</h3>
+        <p><strong>Name:</strong> Kirpal Singh &nbsp;|&nbsp; <strong>Roll No:</strong> 2421217 &nbsp;|&nbsp; <strong>Course:</strong> IT</p>
+      </div>
+      <ul>
+        <li><strong>Attendance Percentage:</strong> Visual color-coded progress bar highlighting exam eligibility (≥ 75% Safe, &lt; 75% Warning).</li>
+        <li><strong>Class-by-Class Attendance:</strong> Detailed session history for each enrolled subject.</li>
+        <li><strong>Coursework Access:</strong> View assignments, lecture materials, and download attachments with one click.</li>
+        <li><strong>Read-Only Simplicity:</strong> Avoids bloated student upload forms; focuses on learning resources.</li>
+      </ul>
+    `
+  },
+  {
+    badge: "Database",
+    title: "Database Models & Schemas",
+    subtitle: "Mongoose ODM Schemas",
+    content: `
+      <div class="grid">
+        <div class="card">
+          <h3>Core Collections</h3>
+          <p><span class="pill">User</span> Name, Email, PasswordHash, Role, RollNumber, Course</p>
+          <p><span class="pill">Class</span> Name, Code, Subject, TeacherId, EnrolledStudents[]</p>
+          <p><span class="pill">Announcement</span> Title, Message, ClassIds[], TeacherId</p>
+        </div>
+        <div class="card">
+          <h3>Attendance & Work</h3>
+          <p><span class="pill">Attendance</span> ClassId, StudentId, Date, Status, MarkedBy</p>
+          <p style="font-size: 0.85rem; color: #16a34a; font-weight: 600; margin-top: 0.25rem;">
+            * Compound Unique Index: { classId: 1, studentId: 1, date: 1 } prevents duplicates!
+          </p>
+          <p style="margin-top: 0.5rem;"><span class="pill">Work</span> Title, Type, ClassIds[], Attachment, MaxMarks</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Security",
+    title: "Security & Role-Based Access Control",
+    subtitle: "Protecting Data and User Isolation",
+    content: `
+      <ul>
+        <li><strong>Stateless JWT Authentication:</strong> Token stored securely and passed via Authorization headers.</li>
+        <li><strong>Backend Role Enforcement:</strong> <code>authorize('teacher')</code> protects sensitive administrative routes.</li>
+        <li><strong>Class-Level Isolation:</strong> Students can only view coursework and download files for classes they are enrolled in. Non-enrolled requests receive HTTP 403 Forbidden.</li>
+        <li><strong>Controlled Registration:</strong> Public sign-up strictly creates student accounts. Teacher accounts cannot be created publicly.</li>
+      </ul>
+    `
+  },
+  {
+    badge: "Logic",
+    title: "Key Algorithms & Logic",
+    subtitle: "Attendance Percentage & Upsert Flow",
+    content: `
+      <div class="grid">
+        <div class="card">
+          <h3>Attendance Formula</h3>
+          <pre>Percentage = (Classes Present / Total Classes Held) * 100</pre>
+          <p style="margin-top: 0.5rem;">Threshold: ≥ 75% displays <strong>"Eligible for Exams"</strong> badge; &lt; 75% triggers an immediate warning.</p>
+        </div>
+        <div class="card">
+          <h3>Deduplication (Upsert)</h3>
+          <p>Using <code>Attendance.findOneAndUpdate()</code> with <code>upsert: true</code>:</p>
+          <p>Saving attendance again for the same class and date safely overwrites the status without creating duplicate rows.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    badge: "Testing",
+    title: "Testing & Verification",
+    subtitle: "15/15 Automated Integration Scenarios Passed",
+    content: `
+      <div class="card">
+        <h3>Verified Workflows:</h3>
+        <p style="color: #16a34a; font-weight: 700; margin-bottom: 0.5rem;">✓ ALL 15 AUTOMATED TESTS PASSING</p>
+        <ul style="font-size: 0.88rem;">
+          <li>Teacher and student authentication & token generation</li>
+          <li>Class creation & student enrollment verification</li>
+          <li>Attendance recording, deduplication, & student percentage retrieval</li>
+          <li>Attachment upload & authenticated student download</li>
+          <li>Class data isolation & role-based HTTP 403 blocking</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    badge: "Viva Demo",
+    title: "Live Demonstration & Accounts",
+    subtitle: "Credentials Configured for Viva Evaluation",
+    content: `
+      <div class="grid">
+        <div class="card">
+          <h3>Teacher Account</h3>
+          <p><strong>Email:</strong> <code>teacher@cms.dev</code></p>
+          <p><strong>Password:</strong> <code>password123</code></p>
+          <p><strong>Name:</strong> Prof. Rajesh Sharma</p>
+        </div>
+        <div class="card">
+          <h3>Student Account (Primary)</h3>
+          <p><strong>Email:</strong> <code>kirpal@cms.dev</code></p>
+          <p><strong>Password:</strong> <code>password123</code></p>
+          <p><strong>Name:</strong> Kirpal Singh (Roll: 2421217, IT)</p>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 1.5rem; font-weight: 700; color: #2563eb;">
+        * Single-click buttons available directly on the login screen for instant demo!
+      </p>
+    `
+  }
+];
+
+let currentIndex = 0;
+
+function renderSlide() {
+  const slide = slides[currentIndex];
+  document.getElementById('slideContent').innerHTML = \`
+    <div class="slide-header">
+      <div>
+        <span class="badge">\${slide.badge}</span>
+        <h1 style="margin-top: 0.5rem;">\${slide.title}</h1>
+        <p class="subtitle">\${slide.subtitle}</p>
+      </div>
+    </div>
+    <div class="slide-body">
+      \${slide.content}
+    </div>
+  \`;
+
+  document.getElementById('slideCounter').innerText = \`Slide \${currentIndex + 1} of \${slides.length}\`;
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+  document.getElementById('nextBtn').disabled = currentIndex === slides.length - 1;
+}
+
+function prevSlide() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderSlide();
+  }
+}
+
+function nextSlide() {
+  if (currentIndex < slides.length - 1) {
+    currentIndex++;
+    renderSlide();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  else if (e.key === 'ArrowLeft') prevSlide();
+});
+
+renderSlide();
+</script>
+
+</body>
+</html>
+

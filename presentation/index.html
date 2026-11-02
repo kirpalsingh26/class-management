@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduManage: Class Management System - Presentation Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0B0F19;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+    
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .slide {
+      display: none;
+      min-height: calc(100vh - 80px);
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .slide {
+        display: block !important;
+        page-break-after: always;
+        min-height: 100vh;
+        padding: 40px !important;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Top Navigation Bar -->
+  <header class="no-print bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+        <i class="fa-solid fa-graduation-cap text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold text-white tracking-wide">EduManage CMS</h1>
+        <p class="text-[11px] text-slate-400">Final Year Viva Presentation Deck</p>
+      </div>
+    </div>
+
+    <!-- Slide Navigation Controls -->
+    <div class="flex items-center space-x-2">
+      <button onclick="prevSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center text-xs font-semibold px-3" title="Previous Slide (Left Arrow)">
+        <i class="fa-solid fa-chevron-left mr-1.5"></i> Prev
+      </button>
+
+      <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-lg border border-slate-800 text-xs font-mono font-bold text-indigo-400 tracking-wider">
+        <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">15</span>
+      </div>
+
+      <button onclick="nextSlide()" class="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center text-xs font-semibold px-3 shadow-md shadow-indigo-600/30" title="Next Slide (Right Arrow / Spacebar)">
+        Next <i class="fa-solid fa-chevron-right ml-1.5"></i>
+      </button>
+
+      <div class="h-4 w-px bg-slate-800 mx-1"></div>
+
+      <button onclick="toggleNotes()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs font-semibold px-3" title="Toggle Speaker Notes">
+        <i class="fa-solid fa-note-sticky text-amber-400 mr-1.5"></i> Speaker Notes
+      </button>
+
+      <button onclick="window.print()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-xs font-semibold px-3" title="Print to PDF">
+        <i class="fa-solid fa-file-pdf text-rose-400 mr-1.5"></i> Export PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Slide Viewport -->
+  <main class="flex-1 flex flex-col justify-center px-4 md:px-12 py-8 max-w-7xl mx-auto w-full">
+
+    <!-- SLIDE 1: Title Slide -->
+    <div class="slide active" id="slide-1">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/40 border border-slate-800/80 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-6">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+          <span>CAPSTONE PROJECT & VIVA DEFENSE</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          EduManage: Class Management System
+        </h1>
+        <p class="text-lg md:text-xl text-slate-300 max-w-3xl font-medium leading-relaxed mb-10">
+          A Modern, Role-Based Full-Stack Web Platform for Academic Administration, Attendance Tracking, Coursework Distribution, and Secure Submissions.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-800">
+          <div class="bg-slate-950/60 p-5 rounded-xl border border-slate-800/80">
+            <h3 class="text-xs uppercase font-mono tracking-wider text-slate-400 font-bold mb-3 flex items-center">
+              <i class="fa-solid fa-code text-indigo-400 mr-2"></i> Technology Stack
+            </h3>
+            <ul class="text-sm text-slate-300 space-y-1.5">
+              <li><strong class="text-white">Stack:</strong> MERN (MongoDB, Express, React 19, Node.js)</li>
+              <li><strong class="text-white">Styling:</strong> Tailwind CSS v4 & Lucide Icons</li>
+              <li><strong class="text-white">Security:</strong> JWT Stateless Tokens & bcryptjs Password Hashing</li>
+            </ul>
+          </div>
+          <div class="bg-slate-950/60 p-5 rounded-xl border border-slate-800/80">
+            <h3 class="text-xs uppercase font-mono tracking-wider text-slate-400 font-bold mb-3 flex items-center">
+              <i class="fa-solid fa-user-graduate text-indigo-400 mr-2"></i> Presentation Details
+            </h3>
+            <ul class="text-sm text-slate-300 space-y-1.5">
+              <li><strong class="text-white">Candidate:</strong> Kirpal Singh (B.Tech CSE)</li>
+              <li><strong class="text-white">Department:</strong> Computer Science & Engineering</li>
+              <li><strong class="text-white">Evaluation:</strong> Final Year Project Viva Voce</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Good morning respected examiners and faculty members. Today I am presenting EduManage — Class Management System. This project is a dedicated, role-based academic platform designed to eliminate the common friction points in college management: scattered WhatsApp files, manual attendance registers, and lack of real-time student visibility into attendance percentages."
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <div class="slide" id="slide-2">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">The Problem</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Challenges in Traditional Academic Record Keeping</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-rose-500/30 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">1. Fragmented Tools</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Colleges rely on disconnected channels: paper attendance registers, homework over WhatsApp groups, and study materials on open Google Drive links. Important deadlines get lost in message spam.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-rose-400 font-medium">
+            Result: Missed submissions and lost records
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-amber-500/30 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">2. Manual Attendance Calculation</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Faculty spend hours at the end of each semester manually summing present marks and calculating percentages. Human error leads to disputes during exam hall ticket clearance.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-amber-400 font-medium">
+            Result: Students unaware of attendance shortage (< 75%)
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-blue-500/30 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-4">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">3. Zero Data Isolation</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Public file links allow any student to access files meant for other sections. Furthermore, assignments submitted in group chats are visible to peers, violating academic integrity.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-blue-400 font-medium">
+            Result: Security leaks and plagiarism risks
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Slide 2 outlines why this project was needed. In our colleges, attendance is often kept in paper registers or scattered Excel sheets. Notes and homework are sent across informal WhatsApp groups where deadlines get buried. More importantly, students have zero real-time visibility into their attendance percentage until the end of the term, leading to shortages. Furthermore, open Google Drive links lack role-based boundaries. EduManage was engineered specifically to solve these 3 critical challenges."
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Project Objectives -->
+    <div class="slide" id="slide-3">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">System Objectives</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Core Deliverables & Design Goals</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">A</span>
+            <h3 class="text-lg font-bold text-white">Strict Role-Based Access Control (RBAC)</h3>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-3">
+            Establish two distinct, secured personas: <strong>Teacher</strong> (administer classes, mark attendance, post materials, grade submissions) and <strong>Student</strong> (view enrolled classes, monitor attendance %, download work, submit assignments).
+          </p>
+          <div class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 font-mono">
+            Backend rule: Student requests to administrative endpoints return HTTP 403 Forbidden.
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">B</span>
+            <h3 class="text-lg font-bold text-white">Multi-Class Roster Management</h3>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-3">
+            Enable faculty to create classes with unique subject codes, search registered students by name or roll number, and enroll them with one click.
+          </p>
+          <div class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 font-mono">
+            Safety rule: Unenrolling a student removes class membership without deleting user account or other records.
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">C</span>
+            <h3 class="text-lg font-bold text-white">Automated Attendance Engine</h3>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-3">
+            Fast daily attendance marking with idempotent upsert: re-saving a date updates records instead of creating duplicate rows.
+          </p>
+          <div class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 font-mono">
+            Formula: Attendance % = (Present Classes / Total Classes Held) × 100 (Late tracked distinctly).
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">D</span>
+            <h3 class="text-lg font-bold text-white">Protected Coursework & Submission Gateway</h3>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-3">
+            Distribute assignments, classwork, projects, and notes across targeted classes. 10MB validated uploads with protected file streaming.
+          </p>
+          <div class="text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 font-mono">
+            Gateway rule: Downloads check token and class membership; public URLs are blocked.
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Here are our four principal project deliverables. We set out to provide strict role separation, scalable multi-class roster enrollment, an idempotent daily attendance engine with transparent percentage calculation, and a protected coursework module that eliminates unauthorized access to academic files."
+      </div>
+    </div>
+
+    <!-- SLIDE 4: System Architecture -->
+    <div class="slide" id="slide-4">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">System Architecture</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">3-Tier Full-Stack Architecture</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+        <!-- Presentation Tier -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Tier 1</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300">Client</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Presentation Layer</h3>
+            <p class="text-xs text-slate-400 mb-4">React 19 Single Page Application bundled with Vite.</p>
+            <ul class="text-xs text-slate-300 space-y-2">
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Responsive Tailwind CSS v4 styling</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Client-side Role Guards (React Router v7)</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Axios interceptors with Bearer token injection</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Instant UI feedback & visual progress meters</li>
+            </ul>
+          </div>
+          <div class="mt-4 p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px] text-slate-400 font-mono text-center">
+            Runs in User Browser
+          </div>
+        </div>
+
+        <!-- Application Tier -->
+        <div class="bg-slate-900/80 border border-indigo-500/40 shadow-lg shadow-indigo-500/10 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Tier 2</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300">Server</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Application / API Layer</h3>
+            <p class="text-xs text-slate-400 mb-4">Node.js with Express.js REST API Architecture.</p>
+            <ul class="text-xs text-slate-300 space-y-2">
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> JWT Token verification middleware</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Role-based route controllers (Teacher vs Student)</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Multer file upload validation (MIME, size)</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Protected file streaming gateway</li>
+            </ul>
+          </div>
+          <div class="mt-4 p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px] text-indigo-300 font-mono text-center">
+            Port 5001 Express REST API
+          </div>
+        </div>
+
+        <!-- Data Tier -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Tier 3</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300">Database</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Data Persistence Layer</h3>
+            <p class="text-xs text-slate-400 mb-4">MongoDB NoSQL document database with Mongoose ODM.</p>
+            <ul class="text-xs text-slate-300 space-y-2">
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> 6 Normalized Collections with Mongoose schemas</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Compound Unique Indexes (prevents duplicate attendance)</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Referential integrity via ObjectId relations</li>
+              <li class="flex items-start"><i class="fa-solid fa-check text-indigo-400 mt-0.5 mr-2"></i> Lean query projections & indexing</li>
+            </ul>
+          </div>
+          <div class="mt-4 p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-[11px] text-slate-400 font-mono text-center">
+            Port 27017 MongoDB Daemon
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "This slide illustrates the 3-Tier Architecture. In Tier 1, React 19 handles user interaction and client routing. In Tier 2, Express handles business logic, JWT authentication, and file validation. In Tier 3, MongoDB stores our normalized collections. The key takeaway here is that static files are not hosted publicly; they must go through the Tier 2 gateway, which validates user permissions before streaming file bytes."
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Technology Stack -->
+    <div class="slide" id="slide-5">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Tech Stack Justification</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Why MERN Stack with Modern Tooling?</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <i class="fa-brands fa-react text-2xl text-cyan-400"></i>
+            <h3 class="text-lg font-bold text-white">React 19 + Vite + Tailwind CSS</h3>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Sub-second development iterations and optimized production bundle.</p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• <strong>Instant HMR:</strong> Vite uses native ES modules, eliminating slow webpack rebuilds.</li>
+            <li>• <strong>Build Speed:</strong> Full frontend compiles in just 220 milliseconds.</li>
+            <li>• <strong>Tailwind CSS v4:</strong> Zero-runtime styling with fine-grained responsive control.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <i class="fa-brands fa-node-js text-2xl text-emerald-400"></i>
+            <h3 class="text-lg font-bold text-white">Node.js + Express.js</h3>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">High-throughput asynchronous non-blocking event-driven API.</p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• <strong>Single Language Stack:</strong> JavaScript end-to-end simplifies mental model and maintenance.</li>
+            <li>• <strong>Middleware Pipeline:</strong> Modular authentication, CORS, body parsing, and route guards.</li>
+            <li>• <strong>RESTful Conventions:</strong> Predictable JSON responses with standard HTTP status codes.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <i class="fa-solid fa-database text-2xl text-emerald-500"></i>
+            <h3 class="text-lg font-bold text-white">MongoDB + Mongoose ODM</h3>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Document-oriented persistence with schema enforcement.</p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• <strong>JSON-Native:</strong> Classes and assignments fit naturally as structured documents.</li>
+            <li>• <strong>Compound Unique Indexing:</strong> Hard database guarantee against duplicate attendance records.</li>
+            <li>• <strong>Mongoose Validation:</strong> Strict type validation and referential population.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <i class="fa-solid fa-key text-2xl text-amber-400"></i>
+            <h3 class="text-lg font-bold text-white">JWT + bcryptjs + Multer</h3>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Standard cryptographic and file safety libraries.</p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• <strong>Stateless Auth:</strong> JSON Web Tokens avoid server-side session memory overhead.</li>
+            <li>• <strong>Secure Salting:</strong> bcryptjs with 10 rounds protects passwords against rainbow tables.</li>
+            <li>• <strong>Multer Engine:</strong> Enforces 10MB file caps, MIME filters, and sanitized storage names.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "When examiners ask why we selected this stack: It gives us maximum developer velocity, asynchronous performance for handling student traffic spikes, and strict schema validation through Mongoose without needing cumbersome migrations."
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Database Schema & Collections -->
+    <div class="slide" id="slide-6">
+      <div class="mb-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Data Modeling</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">MongoDB Collections & Schema Relationships</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-indigo-400 font-mono mb-1">User Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• name: String</div>
+            <div>• email: String (Unique)</div>
+            <div>• passwordHash: String</div>
+            <div>• role: 'teacher' | 'student'</div>
+            <div>• rollNumber: String (Opt)</div>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-2">Drives authentication & role-based routing</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-indigo-400 font-mono mb-1">Class Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• name: String</div>
+            <div>• code: String (Unique)</div>
+            <div>• subject: String</div>
+            <div>• teacherId: Ref User</div>
+            <div>• enrolledStudents: [Ref User]</div>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-2">Maintains classroom roster relationships</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-emerald-500/40 rounded-xl p-4">
+          <div class="text-xs font-bold text-emerald-400 font-mono mb-1">Attendance Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• classId: Ref Class</div>
+            <div>• studentId: Ref User</div>
+            <div>• date: Date (Day only)</div>
+            <div>• status: 'present'|'absent'|'late'</div>
+            <div class="text-emerald-400 font-semibold">• INDEX: (class, student, date)</div>
+          </div>
+          <div class="text-[10px] text-emerald-400 mt-2 font-medium">Compound Unique Index prevents duplicates</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-indigo-400 font-mono mb-1">Work Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• title, description</div>
+            <div>• type: 'assignment'|'notes'...</div>
+            <div>• classIds: [Ref Class]</div>
+            <div>• attachment: Metadata Obj</div>
+            <div>• dueDate, maxMarks</div>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-2">Supports multi-class distribution</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-indigo-500/40 rounded-xl p-4">
+          <div class="text-xs font-bold text-indigo-400 font-mono mb-1">Submission Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• workId: Ref Work</div>
+            <div>• studentId: Ref User</div>
+            <div>• responseText, attachment</div>
+            <div>• status: 'submitted'|'graded'</div>
+            <div>• marks, feedback</div>
+          </div>
+          <div class="text-[10px] text-indigo-400 mt-2 font-medium">Strict student-level privacy guarantee</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="text-xs font-bold text-indigo-400 font-mono mb-1">Announcement Collection</div>
+          <div class="text-[11px] text-slate-400 font-mono space-y-1 bg-slate-950 p-2.5 rounded border border-slate-800">
+            <div>• title: String</div>
+            <div>• message: String</div>
+            <div>• classIds: [Ref Class]</div>
+            <div>• teacherId: Ref User</div>
+            <div>• timestamps: true</div>
+          </div>
+          <div class="text-[10px] text-slate-500 mt-2">Broadcast to enrolled classes only</div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Please observe the Attendance schema on this slide. We specifically implemented a compound unique index on classId, studentId, and date. In MongoDB, this guarantees that even if multiple requests arrive simultaneously, the database will never insert a duplicate record for that student on that date. Instead, our Express controller performs an idempotent findOneAndUpdate."
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Teacher Console & Class Operations -->
+    <div class="slide" id="slide-7">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Teacher Module</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Class Lifecycle & Student Roster Management</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-chalkboard"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Class Management</h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Teachers can create new classes by specifying a Class Name, Subject, Code, and Description.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Edit class subject details anytime.</li>
+            <li>• Safe deletion modal prevents accidents.</li>
+            <li>• View class-specific stats at a glance.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Student Enrollment</h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Faculty search existing student accounts by Name or Roll Number and add them directly to the roster.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Prevents duplicate student entries.</li>
+            <li>• Add new students directly if needed.</li>
+            <li>• Safe unenrollment preserves student profile.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Teacher Dashboard</h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Executive summary of all active classes, enrolled students, coursework items, and recent submissions.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Quick links to Attendance & Work.</li>
+            <li>• Recent submission activity stream.</li>
+            <li>• Single-click role badge in header.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "On the teacher console, a major requirement was safe roster management. If a student drops a course or changes sections, removing them from that class does not delete their user account or wipe their records in other subjects. This decoupling prevents catastrophic accidental data loss."
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Daily Attendance Engine -->
+    <div class="slide" id="slide-8">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Attendance Module</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Idempotent Attendance Recording & Metrics</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-3 flex items-center">
+            <i class="fa-solid fa-clipboard-check text-emerald-400 mr-2"></i> Fast Daily Roll Call
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Faculty select a class and date. The roster is loaded into a clean attendance grid with single-click status toggles for each student.
+          </p>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <span><strong>Mark All Present:</strong> 1-click shortcut for high-attendance days</span>
+              <span class="text-emerald-400 font-mono font-bold">Fast</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <span><strong>Status Options:</strong> Present (P), Absent (A), and Late (L)</span>
+              <span class="text-indigo-400 font-mono font-bold">3 States</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+              <span><strong>Instant Feedback:</strong> Toast notifications confirm persistence</span>
+              <span class="text-cyan-400 font-mono font-bold">Real-Time</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-3 flex items-center">
+            <i class="fa-solid fa-calculator text-indigo-400 mr-2"></i> Standardized Attendance Metrics
+          </h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Attendance percentage is computed using a rigorous formula applied consistently across both faculty reports and student dashboards.
+          </p>
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-indigo-300 mb-4 text-center">
+            Attendance % = (Classes Attended / Total Classes Held) × 100
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span><strong>≥ 75%:</strong> Safe Attendance (Green Progress Meter)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <span><strong>60% - 74%:</strong> Warning Zone (Amber Meter)</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+              <span><strong>&lt; 60%:</strong> Shortage Alert (Red Meter)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "The attendance percentage calculation is standardized across the entire application. Late attendance is tracked separately so students and teachers have full visibility. When a student opens their portal, the visual color coding makes it immediately clear whether they are in danger of detention before semester exams."
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Coursework & Protected File Gateway -->
+    <div class="slide" id="slide-9">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Work & Security</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Coursework Publishing & Protected File Gateway</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Unified Work Module</h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Consolidates Assignments, Classwork, Projects, and Notes in a single flexible interface.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Target one or multiple classes.</li>
+            <li>• Optional Maximum Marks.</li>
+            <li>• Strict submission deadlines.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-file-shield"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">File Upload Validation</h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Multer middleware strictly validates incoming binary attachments before saving to disk.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• 10 MB per-file size ceiling.</li>
+            <li>• MIME filter: PDF, DOCX, PPTX, Images.</li>
+            <li>• Cryptographic safe storage filenames.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-indigo-500/40 rounded-2xl p-6">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2">Protected Gateway</h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Files are not exposed publicly. The download endpoint verifies authentication and class membership.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li>• Direct URL bypass is impossible.</li>
+            <li>• Streams file with original filename.</li>
+            <li>• Unauthorized requests return 403.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Examiners frequently look for file download vulnerabilities. In EduManage, all attachments are stored outside the public directory. When a student clicks 'Download', our Express route validates their JWT token, confirms they belong to the assigned class, and only then pipes the file stream to the client."
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Student Portal & Submissions -->
+    <div class="slide" id="slide-10">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Student Module</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Student Portal & Assignment Submission Lifecycle</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-user text-indigo-400 mr-2"></i> 1. Student Dashboard
+          </h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Clean, distraction-free portal customized specifically for the logged-in student.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Enrolled class overview cards.</li>
+            <li>• Live attendance percentage meters.</li>
+            <li>• Upcoming deadlines countdown.</li>
+            <li>• Filter work by Assignment, Notes, etc.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-upload text-cyan-400 mr-2"></i> 2. Assignment Turn-in
+          </h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Students turn in work through an interactive modal with text notes, attachments, or both.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Clear status: Pending vs Submitted.</li>
+            <li>• Update submission before deadline.</li>
+            <li>• Compound key prevents duplicates.</li>
+            <li>• Strict isolation from peer submissions.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-award text-amber-400 mr-2"></i> 3. Teacher Grading
+          </h3>
+          <p class="text-xs text-slate-400 mb-3 leading-relaxed">
+            Teachers review submissions in a centralized table and evaluate student work.
+          </p>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Download and verify student files.</li>
+            <li>• Award marks against max marks.</li>
+            <li>• Add personalized written feedback.</li>
+            <li>• Marks appear immediately on student view.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "This slide shows the complete lifecycle of coursework submission. The student views the deadline, downloads the assignment file, and turns in their response. The teacher reviews it on their console, awards marks and feedback, and the student's dashboard updates in real-time."
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Security & RBAC -->
+    <div class="slide" id="slide-11">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Security Architecture</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Multi-Layered Security & Access Control</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-lock text-indigo-400 mr-2"></i> 1. Authentication & Passwords
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li>• <strong>bcryptjs Salt Rounds:</strong> 10 rounds of salt generation ensure high resistance against brute-force attacks.</li>
+            <li>• <strong>Stateless JWT:</strong> Signed tokens containing user ID and role, verified on every protected request.</li>
+            <li>• <strong>No Public Teacher Sign-up:</strong> Teacher accounts can only be seeded or created by administrators.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-shield-halved text-cyan-400 mr-2"></i> 2. Dual-Layer Route Authorization
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li>• <strong>Client-Side Guard:</strong> React Router `<RoleRoute>` checks user role before rendering views.</li>
+            <li>• <strong>Server-Side Enforcer:</strong> `requireRole('teacher')` blocks unauthorized API calls (HTTP 403).</li>
+            <li>• <strong>Tamper-Proof:</strong> Bypassing client UI yields zero access because the backend enforces authorization.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-users-slash text-emerald-400 mr-2"></i> 3. Class Boundary Isolation
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li>• <strong>Query Scoping:</strong> Students can only retrieve data for classes where their ID is in `enrolledStudents`.</li>
+            <li>• <strong>Coursework Filtering:</strong> Work and announcements are filtered by class membership.</li>
+            <li>• <strong>Teacher Scoping:</strong> Teachers only modify their own assigned classes.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-2 flex items-center">
+            <i class="fa-solid fa-file-shield text-amber-400 mr-2"></i> 4. Upload & Injection Defense
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li>• <strong>Safe Filenames:</strong> Multer stores files using random cryptographic hashes to prevent path traversal.</li>
+            <li>• <strong>Mongoose Type Casting:</strong> Mitigates classic NoSQL injection vulnerabilities.</li>
+            <li>• <strong>CORS Filtering:</strong> Disallows unapproved origin domains from sending authenticated requests.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Security is critical for any college project defense. Our backend has dual-layer defense: even if someone bypasses the frontend and uses cURL or Postman to invoke an administrative endpoint, the backend middleware inspects the JWT payload and immediately responds with 403 Forbidden."
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Testing & QA -->
+    <div class="slide" id="slide-12">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Verification</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Automated Integration Testing & Build Metrics</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-emerald-500/40 rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i> Integration Test Suite
+            </h3>
+            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-full font-mono text-xs font-bold">15 / 15 Passed</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">All critical workflows verified via automated end-to-end integration test runner:</p>
+          <div class="space-y-1.5 text-xs text-slate-300 font-mono">
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 01. Teacher & Student Login authentication</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 02. Student privilege escalation blocked (HTTP 403)</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 03. Class creation & student roster enrollment</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 04. Duplicate student enrollment rejection</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 05. Attendance upsert without duplicate creation</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 06. Coursework creation & multi-class mapping</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 07. Student turn-in, teacher grading & feedback</div>
+            <div class="flex items-center text-emerald-400"><i class="fa-solid fa-check text-xs mr-2"></i> 08. Protected file download permission checks</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+              <i class="fa-solid fa-gauge-high text-cyan-400 mr-2"></i> Performance & Quality Metrics
+            </h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <div class="text-2xl font-bold font-mono text-indigo-400">220 ms</div>
+                <div class="text-[11px] text-slate-400 uppercase mt-1">Vite Build Time</div>
+              </div>
+              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <div class="text-2xl font-bold font-mono text-emerald-400">0 Errors</div>
+                <div class="text-[11px] text-slate-400 uppercase mt-1">Compiler & Linter</div>
+              </div>
+              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <div class="text-2xl font-bold font-mono text-cyan-400">100%</div>
+                <div class="text-[11px] text-slate-400 uppercase mt-1">Role Isolation</div>
+              </div>
+              <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <div class="text-2xl font-bold font-mono text-amber-400">10 MB</div>
+                <div class="text-[11px] text-slate-400 uppercase mt-1">Upload Guardrail</div>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Database seeder (`npm run seed`) populates a clean demo environment with teacher, 5 students, 3 classes, and realistic submissions.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "To ensure production readiness, we built an automated integration testing harness that tests 15 discrete scenarios, including edge cases like duplicate enrollments and student unauthorized access. Every test passed cleanly."
+      </div>
+    </div>
+
+    <!-- SLIDE 13: Live Demo Plan -->
+    <div class="slide" id="slide-13">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Viva Demonstration</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">7-Step Live Demonstration Roadmap</h2>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">1</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Teacher Login</h4>
+              <p class="text-xs text-slate-400">Sign in with `teacher@cms.dev` and showcase dashboard metric cards.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">2</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Class Roster Inspection</h4>
+              <p class="text-xs text-slate-400">Navigate to 'My Classes', open 'Data Structures', and show enrolled students.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">3</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Attendance Marking</h4>
+              <p class="text-xs text-slate-400">Mark attendance for today using 'Mark All Present', toggle one absent, and save.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">4</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Assignment Upload</h4>
+              <p class="text-xs text-slate-400">Publish 'Binary Search Tree Lab' with a PDF attachment and deadline.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs">5</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Switch to Student Portal</h4>
+              <p class="text-xs text-slate-400">Log in as `aarav@cms.dev`. Show updated attendance % meter and new coursework.</p>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-start space-x-3">
+            <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs">6</span>
+            <div>
+              <h4 class="text-sm font-bold text-white">Student Turn-in</h4>
+              <p class="text-xs text-slate-400">Download assignment PDF attachment and submit student response text.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-xl flex items-center justify-between">
+          <div>
+            <h4 class="text-sm font-bold text-indigo-300">Step 7: Teacher Review & Grading</h4>
+            <p class="text-xs text-slate-400">Switch back to teacher, inspect student submission, enter 95/100 marks, and write feedback.</p>
+          </div>
+          <span class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow">Complete Cycle</span>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "This 7-step sequence guarantees a flawless live viva demonstration. In under 3 minutes, it demonstrates the full cycle: class setup, attendance marking, coursework publishing, student download, submission, and grading."
+      </div>
+    </div>
+
+    <!-- SLIDE 14: Conclusion & Roadmap -->
+    <div class="slide" id="slide-14">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 font-mono">Conclusion</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Project Achievements & Future Scope</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-emerald-400 mb-3 flex items-center">
+            <i class="fa-solid fa-trophy mr-2"></i> Key Project Achievements
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2.5">
+            <li class="flex items-start"><i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 mr-2"></i> Replaced chaotic manual paperwork with centralized, role-based workflows.</li>
+            <li class="flex items-start"><i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 mr-2"></i> Built idempotent attendance tracking eliminating double-marking mistakes.</li>
+            <li class="flex items-start"><i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 mr-2"></i> Real-time attendance percentage alerts students before shortage cutoffs.</li>
+            <li class="flex items-start"><i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 mr-2"></i> Protected file gateway prevents unauthorized material leaks.</li>
+            <li class="flex items-start"><i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 mr-2"></i> Clean MERN architecture optimized for easy college evaluation.</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-indigo-400 mb-3 flex items-center">
+            <i class="fa-solid fa-rocket mr-2"></i> Future Enhancement Roadmap
+          </h3>
+          <ul class="text-xs text-slate-300 space-y-2.5">
+            <li class="flex items-start"><i class="fa-solid fa-arrow-right text-indigo-400 mt-0.5 mr-2"></i> <strong>Automated Notifications:</strong> Web Push & Email alerts for upcoming assignment deadlines.</li>
+            <li class="flex items-start"><i class="fa-solid fa-arrow-right text-indigo-400 mt-0.5 mr-2"></i> <strong>Timetable Scheduler:</strong> Weekly visual lecture calendar with room conflict detection.</li>
+            <li class="flex items-start"><i class="fa-solid fa-arrow-right text-indigo-400 mt-0.5 mr-2"></i> <strong>Online MCQ Quizzes:</strong> Auto-graded objective assessments with time limits.</li>
+            <li class="flex items-start"><i class="fa-solid fa-arrow-right text-indigo-400 mt-0.5 mr-2"></i> <strong>Official PDF Export:</strong> Generate university-format attendance sheets with one click.</li>
+            <li class="flex items-start"><i class="fa-solid fa-arrow-right text-indigo-400 mt-0.5 mr-2"></i> <strong>Mobile App:</strong> Cross-platform mobile client with React Native.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "In conclusion, EduManage provides a solid, secure, and clean solution for classroom administration. Looking ahead, natural extensions include timetable scheduling, automated deadline notifications, and official university PDF report exports."
+      </div>
+    </div>
+
+    <!-- SLIDE 15: Q&A Slide -->
+    <div class="slide" id="slide-15">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/50 border border-slate-800 rounded-2xl p-8 md:p-12 shadow-2xl relative overflow-hidden flex-1 flex flex-col justify-between">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-4">
+            PRESENTATION CONCLUDED
+          </span>
+          <h2 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-3">
+            Thank You!
+          </h2>
+          <p class="text-lg text-indigo-300 font-medium mb-6">
+            Open for Viva Voce Examination & Technical Questions
+          </p>
+          <p class="text-sm text-slate-400 max-w-2xl leading-relaxed">
+            Ready to discuss system design, database indexing strategies, JWT security patterns, or execute live tests.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-slate-800/80">
+          <div class="p-4 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div class="text-xs font-mono font-bold text-slate-400 uppercase">Architecture</div>
+            <div class="text-sm font-semibold text-white mt-1">3-Tier MERN Stack</div>
+            <div class="text-[11px] text-slate-400 mt-1">React 19 + Express + MongoDB</div>
+          </div>
+          <div class="p-4 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div class="text-xs font-mono font-bold text-slate-400 uppercase">Security</div>
+            <div class="text-sm font-semibold text-white mt-1">RBAC + Protected Gateway</div>
+            <div class="text-[11px] text-slate-400 mt-1">Zero public file exposure</div>
+          </div>
+          <div class="p-4 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div class="text-xs font-mono font-bold text-slate-400 uppercase">Demo Accounts</div>
+            <div class="text-sm font-semibold text-white mt-1">teacher@cms.dev</div>
+            <div class="text-[11px] text-slate-400 mt-1">aarav@cms.dev (password123)</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-box hidden mt-4 p-4 bg-slate-900 border-l-4 border-amber-400 rounded-r-xl text-xs text-slate-300 leading-relaxed">
+        <strong>Speaker Talking Points:</strong> "Thank you for your attention. I welcome any questions regarding our architecture, database schema, or live code demonstration."
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Slide Deck Bottom Status Bar -->
+  <footer class="no-print bg-slate-950 border-t border-slate-800 px-6 py-2.5 flex items-center justify-between text-xs text-slate-400">
+    <div class="flex items-center space-x-3">
+      <span class="flex items-center text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span> System Ready
+      </span>
+      <span>•</span>
+      <span>Use <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">←</kbd> <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">→</kbd> keys or click Next</span>
+    </div>
+    <div class="font-mono text-[11px] text-slate-400">
+      Press <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono">N</kbd> to toggle speaker notes
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 15;
+
+    function showSlide(num) {
+      if (num < 1) num = 1;
+      if (num > totalSlides) num = totalSlides;
+      currentSlide = num;
+
+      document.querySelectorAll('.slide').forEach((el, index) => {
+        el.classList.toggle('active', index + 1 === currentSlide);
+      });
+
+      document.getElementById('currentSlideNum').textContent = currentSlide;
+      document.getElementById('totalSlidesNum').textContent = totalSlides;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleNotes() {
+      document.querySelectorAll('.notes-box').forEach(el => {
+        el.classList.toggle('hidden');
+      });
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      }
+    });
+
+    // Initialize
+    showSlide(1);
+  </script>
+</body>
+</html>
+
