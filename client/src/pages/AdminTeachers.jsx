@@ -1,7 +1,20 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
-import { Users, UserPlus, Search, Edit, Trash2, Shield, KeyRound, CheckCircle, Copy, X } from 'lucide-react';
+import {
+  Users,
+  UserPlus,
+  Search,
+  Edit,
+  Trash2,
+  Shield,
+  KeyRound,
+  CheckCircle,
+  Copy,
+  X,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 
 export default function AdminTeachers() {
   const [teachers, setTeachers] = useState([]);
@@ -19,6 +32,11 @@ export default function AdminTeachers() {
   const [saving, setSaving] = useState(false);
   const [provisionNotice, setProvisionNotice] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const [showAllPasswords, setShowAllPasswords] = useState(true);
+  const [showModalPassword, setShowModalPassword] = useState(true);
+  const [copiedPasswordId, setCopiedPasswordId] = useState(null);
 
   const fetchTeachers = async () => {
     try {
@@ -44,6 +62,7 @@ export default function AdminTeachers() {
     setPhone('');
     setPassword('password123');
     setError('');
+    setShowModalPassword(true);
     setIsModalOpen(true);
   };
 
@@ -53,8 +72,9 @@ export default function AdminTeachers() {
     setEmail(t.email);
     setDepartment(t.department || 'Information Technology');
     setPhone(t.phone || '');
-    setPassword('');
+    setPassword(t.initialPassword || 'password123');
     setError('');
+    setShowModalPassword(true);
     setIsModalOpen(true);
   };
 
@@ -69,14 +89,12 @@ export default function AdminTeachers() {
         const payload = { name, email, department, phone };
         if (password.trim()) payload.password = password.trim();
         await api.put(`/admin/teachers/${editingTeacher._id}`, payload);
-        if (password.trim()) {
-          setProvisionNotice({
-            name,
-            email,
-            password: password.trim(),
-            action: 'updated',
-          });
-        }
+        setProvisionNotice({
+          name,
+          email,
+          password: activePassword,
+          action: 'updated',
+        });
       } else {
         await api.post('/admin/teachers', {
           name,
@@ -109,6 +127,26 @@ export default function AdminTeachers() {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handleCopyPassword = (pass, id) => {
+    navigator.clipboard.writeText(pass);
+    setCopiedPasswordId(id);
+    setTimeout(() => setCopiedPasswordId(null), 2000);
+  };
+
+  const togglePasswordVisibility = (id) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [id]: prev[id] !== undefined ? !prev[id] : !showAllPasswords,
+    }));
+  };
+
+  const isPasswordVisible = (id) => {
+    if (visiblePasswords[id] !== undefined) {
+      return visiblePasswords[id];
+    }
+    return showAllPasswords;
+  };
+
   const handleDeleteTeacher = async (id, teacherName) => {
     if (!window.confirm(`Are you sure you want to delete ${teacherName}'s account?`)) return;
 
@@ -135,18 +173,33 @@ export default function AdminTeachers() {
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Faculty & Teacher Management</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Provision teacher accounts, assign departments, and generate faculty login credentials.
+            Provision teacher accounts, assign departments, and manage faculty login credentials with visible passwords.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleOpenCreate}
-          className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition self-start sm:self-auto"
-        >
-          <UserPlus className="w-4 h-4" />
-          Add New Teacher
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowAllPasswords(!showAllPasswords)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold border transition ${
+              showAllPasswords
+                ? 'bg-amber-50 text-amber-800 border-amber-300'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {showAllPasswords ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            {showAllPasswords ? 'Mask Passwords' : 'Show All Passwords'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition"
+          >
+            <UserPlus className="w-4 h-4" />
+            Add New Teacher
+          </button>
+        </div>
       </div>
 
       {provisionNotice && (
@@ -163,7 +216,7 @@ export default function AdminTeachers() {
               <div className="flex flex-wrap gap-2 mt-2 font-mono text-xs text-gray-800 bg-white px-3 py-1.5 rounded border border-green-200">
                 <span>Email: <strong>{provisionNotice.email}</strong></span>
                 <span>•</span>
-                <span>Password: <strong>{provisionNotice.password}</strong></span>
+                <span>Password: <strong className="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{provisionNotice.password}</strong></span>
               </div>
             </div>
           </div>
@@ -216,6 +269,7 @@ export default function AdminTeachers() {
                 <tr>
                   <th className="py-3 px-4">Faculty Name</th>
                   <th className="py-3 px-4">Email Address</th>
+                  <th className="py-3 px-4">Login Password</th>
                   <th className="py-3 px-4">Department</th>
                   <th className="py-3 px-4">Assigned Classes</th>
                   <th className="py-3 px-4">Students</th>
@@ -223,58 +277,100 @@ export default function AdminTeachers() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredTeachers.map((teacher) => (
-                  <tr key={teacher._id} className="hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-semibold text-gray-900">
-                      {teacher.name}
-                    </td>
-                    <td className="py-3 px-4 text-gray-600 font-mono">
-                      {teacher.email}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="bg-purple-50 text-purple-700 font-semibold px-2 py-0.5 rounded text-[11px] border border-purple-200">
-                        {teacher.department || 'Information Technology'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      {teacher.classes && teacher.classes.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {teacher.classes.map((cls) => (
-                            <span
-                              key={cls._id}
-                              className="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200"
-                            >
-                              {cls.code}
-                            </span>
-                          ))}
+                {filteredTeachers.map((teacher) => {
+                  const visible = isPasswordVisible(teacher._id);
+                  const pass = teacher.initialPassword || 'password123';
+
+                  return (
+                    <tr key={teacher._id} className="hover:bg-gray-50 transition">
+                      <td className="py-3 px-4 font-semibold text-gray-900">
+                        {teacher.name}
+                      </td>
+                      <td className="py-3 px-4 text-gray-600 font-mono">
+                        {teacher.email}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1.5 font-mono text-xs">
+                          <span
+                            className={`px-2 py-0.5 rounded border text-[11px] font-semibold transition ${
+                              visible
+                                ? 'bg-amber-50 text-amber-900 border-amber-300 font-bold'
+                                : 'bg-gray-100 text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {visible ? pass : '••••••••'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => togglePasswordVisibility(teacher._id)}
+                            className="p-1 text-gray-400 hover:text-blue-600 rounded transition"
+                            title={visible ? 'Hide password' : 'Show password'}
+                          >
+                            {visible ? (
+                              <EyeOff className="w-3.5 h-3.5" />
+                            ) : (
+                              <Eye className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyPassword(pass, teacher._id)}
+                            className="p-1 text-gray-400 hover:text-green-600 rounded transition"
+                            title="Copy password"
+                          >
+                            {copiedPasswordId === teacher._id ? (
+                              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
                         </div>
-                      ) : (
-                        <span className="text-[11px] text-gray-400">No classes assigned</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 font-bold text-gray-800">
-                      {teacher.studentCount || 0}
-                    </td>
-                    <td className="py-3 px-4 text-right space-x-1">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(teacher)}
-                        title="Edit / Reset Credentials"
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-gray-100 rounded"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteTeacher(teacher._id, teacher.name)}
-                        title="Delete Faculty Account"
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-gray-100 rounded"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="bg-purple-50 text-purple-700 font-semibold px-2 py-0.5 rounded text-[11px] border border-purple-200">
+                          {teacher.department || 'Information Technology'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {teacher.classes && teacher.classes.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {teacher.classes.map((cls) => (
+                              <span
+                                key={cls._id}
+                                className="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200"
+                              >
+                                {cls.code}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-gray-400">No classes assigned</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-bold text-gray-800">
+                        {teacher.studentCount || 0}
+                      </td>
+                      <td className="py-3 px-4 text-right space-x-1">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(teacher)}
+                          title="Edit / Reset Credentials"
+                          className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-gray-100 rounded"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTeacher(teacher._id, teacher.name)}
+                          title="Delete Faculty Account"
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-gray-100 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -356,16 +452,30 @@ export default function AdminTeachers() {
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              {editingTeacher ? 'Reset Password (Leave blank to keep current)' : 'Initial Password'} <span className="text-red-500">*</span>
+              {editingTeacher ? 'Reset / Set Password' : 'Initial Password'} <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              required={!editingTeacher}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={editingTeacher ? 'Enter new password to reset' : 'Initial password for teacher'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="relative">
+              <input
+                type={showModalPassword ? 'text' : 'password'}
+                required={!editingTeacher}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={editingTeacher ? 'Enter new password to reset' : 'Initial password for teacher'}
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              />
+              <button
+                type="button"
+                onClick={() => setShowModalPassword(!showModalPassword)}
+                className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 transition"
+                title={showModalPassword ? 'Hide password' : 'Show password'}
+              >
+                {showModalPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-blue-700">

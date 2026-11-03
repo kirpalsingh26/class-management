@@ -42,6 +42,7 @@ export const getStudents = asyncHandler(async (req, res) => {
     );
     return {
       ...student,
+      initialPassword: student.initialPassword || 'password123',
       enrolledClasses: enrolledClasses.map((c) => ({
         _id: c._id,
         name: c.name,
@@ -116,10 +117,12 @@ export const createStudent = asyncHandler(async (req, res) => {
     }
   }
 
+  const activePassword = password || 'password123';
   const student = await User.create({
     name: name.trim(),
     email: email.toLowerCase().trim(),
-    password: password || 'password123',
+    password: activePassword,
+    initialPassword: activePassword,
     role: 'student',
     rollNumber: rollNumber ? rollNumber.toUpperCase().trim() : '',
     course: course ? course.trim() : 'IT',
@@ -149,7 +152,7 @@ export const updateStudent = asyncHandler(async (req, res) => {
     throw new AppError('Student not found', 404);
   }
 
-  const { name, email, rollNumber, phone, course, classIds } = req.body;
+  const { name, email, rollNumber, phone, course, password, classIds } = req.body;
 
   if (email && email.toLowerCase().trim() !== student.email) {
     const existing = await User.findOne({
@@ -177,6 +180,10 @@ export const updateStudent = asyncHandler(async (req, res) => {
   if (name) student.name = name.trim();
   if (course) student.course = course.trim();
   if (phone !== undefined) student.phone = phone.trim();
+  if (password && password.trim().length >= 6) {
+    student.password = password.trim();
+    student.initialPassword = password.trim();
+  }
 
   await student.save();
 

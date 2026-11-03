@@ -38,6 +38,7 @@ export const getAdminStats = asyncHandler(async (req, res) => {
 
     return {
       ...t,
+      initialPassword: t.initialPassword || 'password123',
       classCount: teacherClasses.length,
       studentCount: uniqueStudents.size,
     };
@@ -78,6 +79,7 @@ export const getTeachers = asyncHandler(async (req, res) => {
 
     return {
       ...t,
+      initialPassword: t.initialPassword || 'password123',
       classes: assignedClasses.map((c) => ({ _id: c._id, name: c.name, code: c.code })),
       classCount: assignedClasses.length,
       studentCount: uniqueStudents.size,
@@ -102,10 +104,12 @@ export const createTeacher = asyncHandler(async (req, res) => {
     throw new AppError('An account with this email already exists', 409);
   }
 
+  const activePassword = password || 'password123';
   const teacher = await User.create({
     name: name.trim(),
     email: email.toLowerCase().trim(),
-    password: password || 'password123',
+    password: activePassword,
+    initialPassword: activePassword,
     role: 'teacher',
     department: department ? department.trim() : 'Information Technology',
     phone: phone ? phone.trim() : '',
@@ -145,6 +149,7 @@ export const updateTeacher = asyncHandler(async (req, res) => {
   if (phone !== undefined) teacher.phone = phone.trim();
   if (password && password.trim().length >= 6) {
     teacher.password = password.trim();
+    teacher.initialPassword = password.trim();
   }
 
   await teacher.save();
@@ -253,3 +258,4 @@ export const getAdminStudents = asyncHandler(async (req, res) => {
     data: { students: studentsWithClasses },
   });
 });
+

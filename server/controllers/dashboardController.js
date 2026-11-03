@@ -39,7 +39,10 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
           totalAttendance,
           totalWorks,
         },
-        teachers,
+        teachers: teachers.map((t) => ({
+          ...t,
+          initialPassword: t.initialPassword || 'password123',
+        })),
         classes: classes.map((c) => ({
           _id: c._id,
           name: c.name,

@@ -15,6 +15,8 @@ import {
   CheckCircle,
   ShieldCheck,
   UserPlus,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -22,6 +24,8 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [visibleAdminPasswords, setVisibleAdminPasswords] = useState({});
+  const [showAllAdminPasswords, setShowAllAdminPasswords] = useState(true);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
@@ -160,12 +164,22 @@ export default function Dashboard() {
                   <h2 className="text-base font-bold text-gray-800">Faculty Roster</h2>
                   <p className="text-xs text-gray-500">Teachers registered and provisioned by Administrator</p>
                 </div>
-                <Link
-                  to="/admin/teachers"
-                  className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1"
-                >
-                  Manage All Faculty <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllAdminPasswords(!showAllAdminPasswords)}
+                    className="text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded border border-amber-200 flex items-center gap-1 transition"
+                  >
+                    {showAllAdminPasswords ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                    {showAllAdminPasswords ? 'Mask Passwords' : 'Show Passwords'}
+                  </button>
+                  <Link
+                    to="/admin/teachers"
+                    className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    Manage All Faculty <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
 
               {teachers && teachers.length > 0 ? (
@@ -175,30 +189,68 @@ export default function Dashboard() {
                       <tr>
                         <th className="py-2.5 px-3 font-semibold">Faculty Name</th>
                         <th className="py-2.5 px-3 font-semibold">Email</th>
+                        <th className="py-2.5 px-3 font-semibold">Login Password</th>
                         <th className="py-2.5 px-3 font-semibold">Department</th>
                         <th className="py-2.5 px-3 font-semibold text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {teachers.slice(0, 5).map((t) => (
-                        <tr key={t._id} className="hover:bg-gray-50">
-                          <td className="py-3 px-3 font-medium text-gray-800">{t.name}</td>
-                          <td className="py-3 px-3 text-gray-600 font-mono text-[11px]">{t.email}</td>
-                          <td className="py-3 px-3 text-gray-600">
-                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium">
-                              {t.department || 'General'}
-                            </span>
-                          </td>
-                          <td className="py-3 px-3 text-right">
-                            <Link
-                              to="/admin/teachers"
-                              className="text-blue-600 hover:underline font-semibold"
-                            >
-                              Edit / Reset
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
+                      {teachers.slice(0, 5).map((t) => {
+                        const isVisible = visibleAdminPasswords[t._id] !== undefined
+                          ? visibleAdminPasswords[t._id]
+                          : showAllAdminPasswords;
+                        const pass = t.initialPassword || 'password123';
+
+                        return (
+                          <tr key={t._id} className="hover:bg-gray-50">
+                            <td className="py-3 px-3 font-medium text-gray-800">{t.name}</td>
+                            <td className="py-3 px-3 text-gray-600 font-mono text-[11px]">{t.email}</td>
+                            <td className="py-3 px-3">
+                              <div className="flex items-center gap-1.5 font-mono text-xs">
+                                <span
+                                  className={`px-2 py-0.5 rounded border text-[11px] font-semibold transition ${
+                                    isVisible
+                                      ? 'bg-amber-50 text-amber-900 border-amber-300 font-bold'
+                                      : 'bg-gray-100 text-gray-400 border-gray-200'
+                                  }`}
+                                >
+                                  {isVisible ? pass : '••••••••'}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setVisibleAdminPasswords((prev) => ({
+                                      ...prev,
+                                      [t._id]: isVisible ? false : true,
+                                    }))
+                                  }
+                                  className="p-1 text-gray-400 hover:text-blue-600 rounded"
+                                  title={isVisible ? 'Hide password' : 'Show password'}
+                                >
+                                  {isVisible ? (
+                                    <EyeOff className="w-3.5 h-3.5" />
+                                  ) : (
+                                    <Eye className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-gray-600">
+                              <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium">
+                                {t.department || 'General'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <Link
+                                to="/admin/teachers"
+                                className="text-blue-600 hover:underline font-semibold"
+                              >
+                                Edit / Reset
+                              </Link>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

@@ -1,7 +1,17 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
-import { Users, UserPlus, Search, BookOpen, CheckCircle, Copy, X } from 'lucide-react';
+import {
+  Users,
+  UserPlus,
+  Search,
+  BookOpen,
+  CheckCircle,
+  Copy,
+  X,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 
 export default function Students() {
   const [students, setStudents] = useState([]);
@@ -20,6 +30,11 @@ export default function Students() {
   const [saving, setSaving] = useState(false);
   const [provisionNotice, setProvisionNotice] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const [showAllPasswords, setShowAllPasswords] = useState(true);
+  const [showModalPassword, setShowModalPassword] = useState(true);
+  const [copiedPasswordId, setCopiedPasswordId] = useState(null);
 
   const fetchStudents = async () => {
     try {
@@ -42,6 +57,17 @@ export default function Students() {
   useEffect(() => {
     fetchStudents();
   }, [selectedClassFilter]);
+
+  const handleOpenAddModal = () => {
+    setName('');
+    setEmail('');
+    setRollNumber('');
+    setCourse('IT');
+    setPassword('password123');
+    setError('');
+    setShowModalPassword(true);
+    setIsModalOpen(true);
+  };
 
   const handleAddStudent = async (e) => {
     e.preventDefault();
@@ -85,6 +111,26 @@ export default function Students() {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const handleCopySinglePassword = (pass, id) => {
+    navigator.clipboard.writeText(pass);
+    setCopiedPasswordId(id);
+    setTimeout(() => setCopiedPasswordId(null), 2000);
+  };
+
+  const togglePasswordVisibility = (id) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [id]: prev[id] !== undefined ? !prev[id] : !showAllPasswords,
+    }));
+  };
+
+  const isPasswordVisible = (id) => {
+    if (visiblePasswords[id] !== undefined) {
+      return visiblePasswords[id];
+    }
+    return showAllPasswords;
+  };
+
   const filteredStudents = students.filter((s) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -100,18 +146,33 @@ export default function Students() {
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Student Directory</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Browse registered student accounts, enroll students, and provide login credentials.
+            Browse registered student accounts, enroll students, and manage student login passwords.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition self-start sm:self-auto"
-        >
-          <UserPlus className="w-4 h-4" />
-          Add Student
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowAllPasswords(!showAllPasswords)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold border transition ${
+              showAllPasswords
+                ? 'bg-amber-50 text-amber-800 border-amber-300'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {showAllPasswords ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            {showAllPasswords ? 'Mask Passwords' : 'Show All Passwords'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenAddModal}
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md text-sm transition"
+          >
+            <UserPlus className="w-4 h-4" />
+            Add Student
+          </button>
+        </div>
       </div>
 
       {provisionNotice && (
@@ -128,7 +189,7 @@ export default function Students() {
               <div className="flex flex-wrap gap-2 mt-2 font-mono text-xs text-gray-800 bg-white px-3 py-1.5 rounded border border-green-200">
                 <span>Email: <strong>{provisionNotice.email}</strong></span>
                 <span>•</span>
-                <span>Password: <strong>{provisionNotice.password}</strong></span>
+                <span>Password: <strong className="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{provisionNotice.password}</strong></span>
               </div>
             </div>
           </div>
@@ -193,46 +254,89 @@ export default function Students() {
                 <tr>
                   <th className="py-3 px-4">Roll Number</th>
                   <th className="py-3 px-4">Student Name</th>
+                  <th className="py-3 px-4">Login Password</th>
                   <th className="py-3 px-4">Course</th>
                   <th className="py-3 px-4">Email Address</th>
                   <th className="py-3 px-4">Enrolled Subjects</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredStudents.map((student) => (
-                  <tr key={student._id} className="hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-mono font-semibold text-gray-900">
-                      {student.rollNumber || 'N/A'}
-                    </td>
-                    <td className="py-3 px-4 font-semibold text-gray-800">
-                      {student.name}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded text-[11px]">
-                        {student.course || 'IT'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-500 font-mono">
-                      {student.email}
-                    </td>
-                    <td className="py-3 px-4">
-                      {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {student.enrolledClasses.map((cls) => (
-                            <span
-                              key={cls._id}
-                              className="text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200"
-                            >
-                              {cls.code}
-                            </span>
-                          ))}
+                {filteredStudents.map((student) => {
+                  const visible = isPasswordVisible(student._id);
+                  const pass = student.initialPassword || 'password123';
+
+                  return (
+                    <tr key={student._id} className="hover:bg-gray-50 transition">
+                      <td className="py-3 px-4 font-mono font-semibold text-gray-900">
+                        {student.rollNumber || 'N/A'}
+                      </td>
+                      <td className="py-3 px-4 font-semibold text-gray-800">
+                        {student.name}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1.5 font-mono text-xs">
+                          <span
+                            className={`px-2 py-0.5 rounded border text-[11px] font-semibold transition ${
+                              visible
+                                ? 'bg-amber-50 text-amber-900 border-amber-300 font-bold'
+                                : 'bg-gray-100 text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {visible ? pass : '••••••••'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => togglePasswordVisibility(student._id)}
+                            className="p-1 text-gray-400 hover:text-blue-600 rounded transition"
+                            title={visible ? 'Hide password' : 'Show password'}
+                          >
+                            {visible ? (
+                              <EyeOff className="w-3.5 h-3.5" />
+                            ) : (
+                              <Eye className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopySinglePassword(pass, student._id)}
+                            className="p-1 text-gray-400 hover:text-green-600 rounded transition"
+                            title="Copy password"
+                          >
+                            {copiedPasswordId === student._id ? (
+                              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
                         </div>
-                      ) : (
-                        <span className="text-[11px] text-gray-400">None</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded text-[11px]">
+                          {student.course || 'IT'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-gray-500 font-mono">
+                        {student.email}
+                      </td>
+                      <td className="py-3 px-4">
+                        {student.enrolledClasses && student.enrolledClasses.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {student.enrolledClasses.map((cls) => (
+                              <span
+                                key={cls._id}
+                                className="text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200"
+                              >
+                                {cls.code}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[11px] text-gray-400">None</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -317,14 +421,28 @@ export default function Students() {
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
               Initial Password <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Initial login password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="relative">
+              <input
+                type={showModalPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Initial login password"
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              />
+              <button
+                type="button"
+                onClick={() => setShowModalPassword(!showModalPassword)}
+                className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 transition"
+                title={showModalPassword ? 'Hide password' : 'Show password'}
+              >
+                {showModalPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-blue-700">

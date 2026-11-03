@@ -32,3 +32,4 @@ router.put('/classes/:id/assign-teacher', assignClassTeacher);
 router.get('/students', getAdminStudents);
 
 export default router;
+
