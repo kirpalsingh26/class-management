@@ -373,12 +373,50 @@ async function runTests() {
     }
     console.log('✓ Non-admin roles strictly blocked from admin routes (403 Forbidden)');
 
+    console.log('\n[22] Testing Auto-Generation of Teacher Roll Number and Email from Name...');
+    const autoTeacherRes = await request('POST', '/api/admin/teachers', {
+      token: adminToken,
+      body: {
+        name: 'Dr. Jagdish Chandra Bose',
+        department: 'Physics & Computing',
+        password: 'password123',
+      },
+    });
+    if (autoTeacherRes.status !== 201) {
+      throw new Error(`Auto teacher creation failed: ${JSON.stringify(autoTeacherRes.data)}`);
+    }
+    const autoTeacher = autoTeacherRes.data.data.teacher;
+    if (!autoTeacher.rollNumber || !autoTeacher.email) {
+      throw new Error(`Teacher roll or email was not auto-generated: ${JSON.stringify(autoTeacher)}`);
+    }
+    console.log(`✓ Auto-generated teacher account: Roll=${autoTeacher.rollNumber}, Email=${autoTeacher.email}`);
+
+    console.log('\n[23] Testing Auto-Generation of Student Roll Number and Email from Name...');
+    const autoStudentRes = await request('POST', '/api/students', {
+      token: teacherToken,
+      body: {
+        name: 'Gurpreet Singh',
+        course: 'IT',
+        password: 'password123',
+      },
+    });
+    if (autoStudentRes.status !== 201) {
+      throw new Error(`Auto student creation failed: ${JSON.stringify(autoStudentRes.data)}`);
+    }
+    const autoStudent = autoStudentRes.data.data.student;
+    if (!autoStudent.rollNumber || !autoStudent.email) {
+      throw new Error(`Student roll or email was not auto-generated: ${JSON.stringify(autoStudent)}`);
+    }
+    console.log(`✓ Auto-generated student account: Roll=${autoStudent.rollNumber}, Email=${autoStudent.email}`);
+
     await User.findByIdAndDelete(createdStudentId);
     await User.findByIdAndDelete(createdTeacherId);
+    await User.findByIdAndDelete(autoTeacher._id);
+    await User.findByIdAndDelete(autoStudent._id);
     await request('DELETE', `/api/classes/${testClass._id}`, { token: teacherToken });
 
     console.log('\n=============================================');
-    console.log('ALL 21 INTEGRATION TEST SCENARIOS PASSED! ✓');
+    console.log('ALL 23 INTEGRATION TEST SCENARIOS PASSED! ✓');
     console.log('=============================================\n');
 
     server.close();

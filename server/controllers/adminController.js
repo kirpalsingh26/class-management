@@ -93,13 +93,59 @@ export const getTeachers = asyncHandler(async (req, res) => {
 });
 
 export const createTeacher = asyncHandler(async (req, res) => {
-  const { name, email, password, department, phone } = req.body;
+  let { name, email, rollNumber, password, department, phone } = req.body;
 
-  if (!name || !email) {
-    throw new AppError('Name and email are required', 400);
+  if (!name || !name.trim()) {
+    throw new AppError('Name is required', 400);
   }
 
-  const existing = await User.findOne({ email: email.toLowerCase().trim() });
+  if (!rollNumber || !rollNumber.toString().trim()) {
+    const teachers = await User.find({ role: 'teacher' }).select('rollNumber').lean();
+    let highest = 100;
+    teachers.forEach((t) => {
+      if (t.rollNumber) {
+        const match = t.rollNumber.match(/\d+/);
+        if (match) {
+          const parsed = parseInt(match[0], 10);
+          if (!isNaN(parsed) && parsed > highest) {
+            highest = parsed;
+          }
+        }
+      }
+    });
+    rollNumber = `FAC-${highest + 1}`;
+  } else {
+    rollNumber = rollNumber.toString().toUpperCase().trim();
+  }
+
+  const existingRoll = await User.findOne({
+    role: 'teacher',
+    rollNumber,
+  });
+  if (existingRoll) {
+    throw new AppError('A teacher with this roll number or faculty code already exists', 409);
+  }
+
+  if (!email || !email.trim()) {
+    let clean = name
+      .toLowerCase()
+      .replace(/^(dr\.|prof\.|mr\.|ms\.|mrs\.|er\.)\s+/i, '')
+      .trim()
+      .replace(/[^a-z0-9]+/g, '.')
+      .replace(/^\.+|\.+$/g, '');
+    if (!clean) clean = 'faculty';
+    let candidateEmail = `${clean}@cms.dev`;
+    let counter = 1;
+    while (await User.findOne({ email: candidateEmail })) {
+      candidateEmail = `${clean}${counter}@cms.dev`;
+      counter++;
+    }
+    email = candidateEmail;
+  } else {
+    email = email.toLowerCase().trim();
+  }
+
+  const existing = await User.findOne({ email });
   if (existing) {
     throw new AppError('An account with this email already exists', 409);
   }
@@ -107,7 +153,8 @@ export const createTeacher = asyncHandler(async (req, res) => {
   const activePassword = password || 'password123';
   const teacher = await User.create({
     name: name.trim(),
-    email: email.toLowerCase().trim(),
+    email,
+    rollNumber,
     password: activePassword,
     initialPassword: activePassword,
     role: 'teacher',
@@ -131,7 +178,7 @@ export const updateTeacher = asyncHandler(async (req, res) => {
     throw new AppError('Teacher not found', 404);
   }
 
-  const { name, email, password, department, phone } = req.body;
+  let { name, email, rollNumber, password, department, phone } = req.body;
 
   if (email && email.toLowerCase().trim() !== teacher.email) {
     const existing = await User.findOne({
@@ -142,6 +189,21 @@ export const updateTeacher = asyncHandler(async (req, res) => {
       throw new AppError('Email is already taken by another account', 409);
     }
     teacher.email = email.toLowerCase().trim();
+  }
+
+  if (rollNumber !== undefined && rollNumber.toString().trim().toUpperCase() !== teacher.rollNumber) {
+    const formattedRoll = rollNumber.toString().trim().toUpperCase();
+    if (formattedRoll) {
+      const existingRoll = await User.findOne({
+        role: 'teacher',
+        rollNumber: formattedRoll,
+        _id: { $ne: teacher._id },
+      });
+      if (existingRoll) {
+        throw new AppError('This roll number or faculty code is already taken', 409);
+      }
+      teacher.rollNumber = formattedRoll;
+    }
   }
 
   if (name) teacher.name = name.trim();

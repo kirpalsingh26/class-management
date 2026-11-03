@@ -190,6 +190,7 @@ export default function Dashboard() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider border-b border-gray-200">
                       <tr>
+                        <th className="py-2.5 px-3 font-semibold">Faculty ID</th>
                         <th className="py-2.5 px-3 font-semibold">Faculty Name</th>
                         <th className="py-2.5 px-3 font-semibold">Email</th>
                         <th className="py-2.5 px-3 font-semibold">Login Password</th>
@@ -206,6 +207,7 @@ export default function Dashboard() {
 
                         return (
                           <tr key={t._id} className="hover:bg-gray-50">
+                            <td className="py-3 px-3 font-mono text-gray-700 font-semibold text-[11px]">{t.rollNumber || 'N/A'}</td>
                             <td className="py-3 px-3 font-medium text-gray-800">{t.name}</td>
                             <td className="py-3 px-3 text-gray-600 font-mono text-[11px]">{t.email}</td>
                             <td className="py-3 px-3">

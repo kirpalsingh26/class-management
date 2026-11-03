@@ -13,6 +13,41 @@ import {
   EyeOff,
 } from 'lucide-react';
 
+const generateStudentEmail = (fullName, existingList = []) => {
+  if (!fullName || !fullName.trim()) return '';
+  let clean = fullName
+    .toLowerCase()
+    .replace(/^(dr\.|prof\.|mr\.|ms\.|mrs\.|er\.)\s+/i, '')
+    .trim()
+    .replace(/[^a-z0-9]+/g, '.')
+    .replace(/^\.+|\.+$/g, '');
+
+  if (!clean) return '';
+  const existingEmails = new Set(existingList.map((item) => item.email?.toLowerCase()));
+  let baseEmail = `${clean}@cms.dev`;
+  if (!existingEmails.has(baseEmail)) {
+    return baseEmail;
+  }
+  let index = 1;
+  while (existingEmails.has(`${clean}${index}@cms.dev`)) {
+    index++;
+  }
+  return `${clean}${index}@cms.dev`;
+};
+
+const getNextStudentRoll = (studentList = []) => {
+  let highest = 2421216;
+  studentList.forEach((s) => {
+    if (s.rollNumber) {
+      const parsed = parseInt(s.rollNumber.replace(/\D/g, ''), 10);
+      if (!isNaN(parsed) && parsed > highest) {
+        highest = parsed;
+      }
+    }
+  });
+  return String(highest + 1);
+};
+
 export default function Students() {
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -30,6 +65,7 @@ export default function Students() {
   const [saving, setSaving] = useState(false);
   const [provisionNotice, setProvisionNotice] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isEmailManuallyEdited, setIsEmailManuallyEdited] = useState(false);
 
   const [visiblePasswords, setVisiblePasswords] = useState({});
   const [showAllPasswords, setShowAllPasswords] = useState(false);
@@ -61,12 +97,28 @@ export default function Students() {
   const handleOpenAddModal = () => {
     setName('');
     setEmail('');
-    setRollNumber('');
+    setRollNumber(getNextStudentRoll(students));
     setCourse('IT');
     setPassword('password123');
     setError('');
     setShowModalPassword(false);
+    setIsEmailManuallyEdited(false);
     setIsModalOpen(true);
+  };
+
+  const handleNameChange = (val) => {
+    setName(val);
+    if (!isEmailManuallyEdited) {
+      setEmail(generateStudentEmail(val, students));
+    }
+    if (!rollNumber) {
+      setRollNumber(getNextStudentRoll(students));
+    }
+  };
+
+  const handleEmailChange = (val) => {
+    setEmail(val);
+    setIsEmailManuallyEdited(true);
   };
 
   const handleAddStudent = async (e) => {
@@ -376,36 +428,46 @@ export default function Students() {
               type="text"
               required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
               placeholder="e.g. Rahul Sharma"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Email Address <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-gray-700 uppercase">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <span className="text-[11px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium">
+                Auto-generated
+              </span>
+            </div>
             <input
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. rahul@cms.dev"
+              onChange={(e) => handleEmailChange(e.target.value)}
+              placeholder="Auto-created when name is typed"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Roll Number <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-gray-700 uppercase">
+                Roll Number <span className="text-red-500">*</span>
+              </label>
+              <span className="text-[11px] text-green-700 bg-green-50 px-2 py-0.5 rounded font-medium">
+                Auto-assigned
+              </span>
+            </div>
             <input
               type="text"
               required
               value={rollNumber}
               onChange={(e) => setRollNumber(e.target.value)}
-              placeholder="e.g. 2421218"
+              placeholder="e.g. 2421225"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>

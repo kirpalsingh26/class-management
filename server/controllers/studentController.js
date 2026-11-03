@@ -96,35 +96,68 @@ export const getStudentById = asyncHandler(async (req, res) => {
 });
 
 export const createStudent = asyncHandler(async (req, res) => {
-  const { name, email, rollNumber, course, phone, password, classIds } = req.body;
+  let { name, email, rollNumber, course, phone, password, classIds } = req.body;
 
-  if (!name || !email) {
-    throw new AppError('Name and email are required', 400);
+  if (!name || !name.trim()) {
+    throw new AppError('Name is required', 400);
   }
 
-  const existing = await User.findOne({ email: email.toLowerCase().trim() });
+  if (!rollNumber || !rollNumber.toString().trim()) {
+    const students = await User.find({ role: 'student' }).select('rollNumber').lean();
+    let highest = 2421216;
+    students.forEach((s) => {
+      if (s.rollNumber) {
+        const parsed = parseInt(s.rollNumber.replace(/\D/g, ''), 10);
+        if (!isNaN(parsed) && parsed > highest) {
+          highest = parsed;
+        }
+      }
+    });
+    rollNumber = String(highest + 1);
+  } else {
+    rollNumber = rollNumber.toString().toUpperCase().trim();
+  }
+
+  const existingRoll = await User.findOne({
+    role: 'student',
+    rollNumber,
+  });
+  if (existingRoll) {
+    throw new AppError('A student with this roll number already exists', 409);
+  }
+
+  if (!email || !email.trim()) {
+    let clean = name
+      .toLowerCase()
+      .replace(/^(dr\.|prof\.|mr\.|ms\.|mrs\.|er\.)\s+/i, '')
+      .trim()
+      .replace(/[^a-z0-9]+/g, '.')
+      .replace(/^\.+|\.+$/g, '');
+    if (!clean) clean = 'student';
+    let candidateEmail = `${clean}@cms.dev`;
+    let counter = 1;
+    while (await User.findOne({ email: candidateEmail })) {
+      candidateEmail = `${clean}${counter}@cms.dev`;
+      counter++;
+    }
+    email = candidateEmail;
+  } else {
+    email = email.toLowerCase().trim();
+  }
+
+  const existing = await User.findOne({ email });
   if (existing) {
     throw new AppError('An account with this email already exists', 409);
-  }
-
-  if (rollNumber) {
-    const existingRoll = await User.findOne({
-      role: 'student',
-      rollNumber: rollNumber.toUpperCase().trim(),
-    });
-    if (existingRoll) {
-      throw new AppError('A student with this roll number already exists', 409);
-    }
   }
 
   const activePassword = password || 'password123';
   const student = await User.create({
     name: name.trim(),
-    email: email.toLowerCase().trim(),
+    email,
     password: activePassword,
     initialPassword: activePassword,
     role: 'student',
-    rollNumber: rollNumber ? rollNumber.toUpperCase().trim() : '',
+    rollNumber,
     course: course ? course.trim() : 'IT',
     phone: phone ? phone.trim() : '',
   });

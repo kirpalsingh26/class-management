@@ -16,6 +16,44 @@ import {
   EyeOff,
 } from 'lucide-react';
 
+const generateTeacherEmail = (fullName, existingList = []) => {
+  if (!fullName || !fullName.trim()) return '';
+  let clean = fullName
+    .toLowerCase()
+    .replace(/^(dr\.|prof\.|mr\.|ms\.|mrs\.|er\.)\s+/i, '')
+    .trim()
+    .replace(/[^a-z0-9]+/g, '.')
+    .replace(/^\.+|\.+$/g, '');
+
+  if (!clean) return '';
+  const existingEmails = new Set(existingList.map((item) => item.email?.toLowerCase()));
+  let baseEmail = `${clean}@cms.dev`;
+  if (!existingEmails.has(baseEmail)) {
+    return baseEmail;
+  }
+  let index = 1;
+  while (existingEmails.has(`${clean}${index}@cms.dev`)) {
+    index++;
+  }
+  return `${clean}${index}@cms.dev`;
+};
+
+const getNextTeacherRoll = (teacherList = []) => {
+  let highest = 100;
+  teacherList.forEach((t) => {
+    if (t.rollNumber) {
+      const match = t.rollNumber.match(/\d+/);
+      if (match) {
+        const parsed = parseInt(match[0], 10);
+        if (!isNaN(parsed) && parsed > highest) {
+          highest = parsed;
+        }
+      }
+    }
+  });
+  return `FAC-${highest + 1}`;
+};
+
 export default function AdminTeachers() {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +63,7 @@ export default function AdminTeachers() {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [rollNumber, setRollNumber] = useState('');
   const [department, setDepartment] = useState('Information Technology');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('password123');
@@ -32,6 +71,7 @@ export default function AdminTeachers() {
   const [saving, setSaving] = useState(false);
   const [provisionNotice, setProvisionNotice] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isEmailManuallyEdited, setIsEmailManuallyEdited] = useState(false);
 
   const [visiblePasswords, setVisiblePasswords] = useState({});
   const [showAllPasswords, setShowAllPasswords] = useState(false);
@@ -58,11 +98,13 @@ export default function AdminTeachers() {
     setEditingTeacher(null);
     setName('');
     setEmail('');
+    setRollNumber(getNextTeacherRoll(teachers));
     setDepartment('Information Technology');
     setPhone('');
     setPassword('password123');
     setError('');
     setShowModalPassword(false);
+    setIsEmailManuallyEdited(false);
     setIsModalOpen(true);
   };
 
@@ -70,12 +112,29 @@ export default function AdminTeachers() {
     setEditingTeacher(t);
     setName(t.name);
     setEmail(t.email);
+    setRollNumber(t.rollNumber || '');
     setDepartment(t.department || 'Information Technology');
     setPhone(t.phone || '');
     setPassword(t.initialPassword || 'password123');
     setError('');
     setShowModalPassword(false);
+    setIsEmailManuallyEdited(true);
     setIsModalOpen(true);
+  };
+
+  const handleNameChange = (val) => {
+    setName(val);
+    if (!isEmailManuallyEdited) {
+      setEmail(generateTeacherEmail(val, teachers));
+    }
+    if (!rollNumber) {
+      setRollNumber(getNextTeacherRoll(teachers));
+    }
+  };
+
+  const handleEmailChange = (val) => {
+    setEmail(val);
+    setIsEmailManuallyEdited(true);
   };
 
   const handleSaveTeacher = async (e) => {
@@ -86,12 +145,13 @@ export default function AdminTeachers() {
     try {
       const activePassword = password.trim() || 'password123';
       if (editingTeacher) {
-        const payload = { name, email, department, phone };
+        const payload = { name, email, rollNumber, department, phone };
         if (password.trim()) payload.password = password.trim();
         await api.put(`/admin/teachers/${editingTeacher._id}`, payload);
         setProvisionNotice({
           name,
           email,
+          rollNumber,
           password: activePassword,
           action: 'updated',
         });
@@ -99,6 +159,7 @@ export default function AdminTeachers() {
         await api.post('/admin/teachers', {
           name,
           email,
+          rollNumber,
           department,
           phone,
           password: activePassword,
@@ -106,6 +167,7 @@ export default function AdminTeachers() {
         setProvisionNotice({
           name,
           email,
+          rollNumber,
           password: activePassword,
           action: 'created',
         });
@@ -121,7 +183,7 @@ export default function AdminTeachers() {
 
   const handleCopyCredentials = () => {
     if (!provisionNotice) return;
-    const text = `Faculty Login Credentials:\nName: ${provisionNotice.name}\nEmail: ${provisionNotice.email}\nPassword: ${provisionNotice.password}\nPortal: ${window.location.origin}/login`;
+    const text = `Faculty Login Credentials:\nName: ${provisionNotice.name}\nRoll / Faculty ID: ${provisionNotice.rollNumber || 'N/A'}\nEmail: ${provisionNotice.email}\nPassword: ${provisionNotice.password}\nPortal: ${window.location.origin}/login`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
@@ -221,6 +283,8 @@ export default function AdminTeachers() {
                 Share these credentials with <strong>{provisionNotice.name}</strong>:
               </p>
               <div className="flex flex-wrap gap-2 mt-2 font-mono text-xs text-gray-800 bg-white px-3 py-1.5 rounded border border-green-200">
+                <span>Faculty ID: <strong>{provisionNotice.rollNumber || 'N/A'}</strong></span>
+                <span>•</span>
                 <span>Email: <strong>{provisionNotice.email}</strong></span>
                 <span>•</span>
                 <span>Password: <strong className="text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{provisionNotice.password}</strong></span>
@@ -274,6 +338,7 @@ export default function AdminTeachers() {
             <table className="w-full text-left text-xs text-gray-600">
               <thead className="bg-gray-100 text-gray-700 font-semibold uppercase tracking-wider text-[11px] border-b border-gray-200">
                 <tr>
+                  <th className="py-3 px-4">Faculty ID / Roll</th>
                   <th className="py-3 px-4">Faculty Name</th>
                   <th className="py-3 px-4">Email Address</th>
                   <th className="py-3 px-4">Login Password</th>
@@ -290,6 +355,9 @@ export default function AdminTeachers() {
 
                   return (
                     <tr key={teacher._id} className="hover:bg-gray-50 transition">
+                      <td className="py-3 px-4 font-mono font-semibold text-gray-900">
+                        {teacher.rollNumber || 'N/A'}
+                      </td>
                       <td className="py-3 px-4 font-semibold text-gray-900">
                         {teacher.name}
                       </td>
@@ -408,22 +476,46 @@ export default function AdminTeachers() {
               type="text"
               required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleNameChange(e.target.value)}
               placeholder="e.g. Dr. Ramesh Kumar"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Email Address <span className="text-red-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-gray-700 uppercase">
+                Faculty ID / Roll Number <span className="text-red-500">*</span>
+              </label>
+              <span className="text-[11px] text-green-700 bg-green-50 px-2 py-0.5 rounded font-medium">
+                Auto-assigned
+              </span>
+            </div>
+            <input
+              type="text"
+              required
+              value={rollNumber}
+              onChange={(e) => setRollNumber(e.target.value)}
+              placeholder="e.g. FAC-103"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-gray-700 uppercase">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <span className="text-[11px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium">
+                Auto-generated
+              </span>
+            </div>
             <input
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. ramesh@cms.dev"
+              onChange={(e) => handleEmailChange(e.target.value)}
+              placeholder="Auto-created when name is typed"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

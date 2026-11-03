@@ -34,6 +34,7 @@ const seedDatabase = async () => {
       email: 'teacher@cms.dev',
       password: 'password123',
       role: 'teacher',
+      rollNumber: 'FAC-101',
       department: 'Information Technology',
       phone: '+91 98765 43210',
     });
@@ -43,6 +44,7 @@ const seedDatabase = async () => {
       email: 'priya@cms.dev',
       password: 'password123',
       role: 'teacher',
+      rollNumber: 'FAC-102',
       department: 'Computer Science',
       phone: '+91 98765 11223',
     });
