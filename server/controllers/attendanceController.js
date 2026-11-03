@@ -148,11 +148,15 @@ export const getMyAttendance = asyncHandler(async (req, res) => {
     totalAllAbsent += absent;
 
     classBreakdown.push({
+      _id: c._id,
       classId: c._id,
+      name: c.name,
       className: c.name,
+      code: c.code,
       classCode: c.code,
       subject: c.subject,
       teacher: c.teacherId?.name || 'Instructor',
+      teacherName: c.teacherId?.name || 'Instructor',
       totalHeld,
       present,
       absent,

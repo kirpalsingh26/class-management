@@ -199,6 +199,16 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
     .limit(4)
     .lean();
 
+  const mappedClasses = enrolledClasses.map((c) => ({
+    _id: c._id,
+    name: c.name,
+    code: c.code,
+    subject: c.subject,
+    teacher: c.teacherId?.name || 'Instructor',
+    teacherName: c.teacherId?.name || 'Instructor',
+    attendancePercentage: classAttendanceMap[c._id.toString()]?.percentage ?? 100,
+  }));
+
   res.json({
     success: true,
     data: {
@@ -208,6 +218,15 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
         rollNumber: req.user.rollNumber,
         email: req.user.email,
       },
+      summary: {
+        overallAttendancePercentage: overallPercentage,
+        totalHeld,
+        totalPresent,
+        totalAbsent,
+        totalClasses: enrolledClasses.length,
+        totalAssignments: allWorks.length,
+        pendingAssignments: upcomingAssignments.length,
+      },
       attendance: {
         overallPercentage,
         totalHeld,
@@ -215,14 +234,9 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
         totalAbsent,
         classes: Object.values(classAttendanceMap),
       },
-      enrolledClasses: enrolledClasses.map((c) => ({
-        _id: c._id,
-        name: c.name,
-        code: c.code,
-        subject: c.subject,
-        teacher: c.teacherId?.name || 'Teacher',
-        attendancePercentage: classAttendanceMap[c._id.toString()]?.percentage || 100,
-      })),
+      classes: mappedClasses,
+      enrolledClasses: mappedClasses,
+      upcomingWork: upcomingAssignments,
       upcomingAssignments,
       recentNotesAndWork,
       recentAnnouncements,

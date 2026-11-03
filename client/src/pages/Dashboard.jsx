@@ -529,8 +529,16 @@ export default function Dashboard() {
     );
   }
 
-  const { summary, classes, upcomingWork, recentAnnouncements } = data;
-  const overallPercentage = summary?.overallAttendancePercentage ?? 100;
+  const overallPercentage =
+    data.attendance?.overallPercentage ??
+    data.summary?.overallAttendancePercentage ??
+    100;
+  const totalHeld = data.attendance?.totalHeld ?? data.summary?.totalHeld ?? 0;
+  const totalPresent = data.attendance?.totalPresent ?? data.summary?.totalPresent ?? 0;
+  const totalAbsent = data.attendance?.totalAbsent ?? data.summary?.totalAbsent ?? 0;
+  const classList = data.classes || data.enrolledClasses || [];
+  const workList = data.upcomingWork || data.upcomingAssignments || [];
+  const announcementsList = data.recentAnnouncements || [];
 
   return (
     <div className="space-y-6">
@@ -559,12 +567,27 @@ export default function Dashboard() {
                     : 'bg-red-100 text-red-800'
                 }`}
               >
-                {overallPercentage >= 75 ? 'Safe (≥ 75%)' : 'Attendance Shortage Warning (< 75%)'}
+                {overallPercentage >= 75
+                  ? 'Safe (≥ 75%)'
+                  : overallPercentage >= 65
+                  ? 'Attendance Shortage Warning (< 75%)'
+                  : 'Critical Shortage (< 65%)'}
               </span>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Formula: (Present Classes / Total Classes Held) × 100
+              Formula: ({totalPresent} Present Classes / {totalHeld} Total Classes Held) × 100
             </p>
+            <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
+              <span className="bg-gray-100 text-gray-700 font-semibold px-2.5 py-1 rounded border border-gray-200">
+                Total Held: <strong>{totalHeld}</strong>
+              </span>
+              <span className="bg-green-50 text-green-700 font-semibold px-2.5 py-1 rounded border border-green-200">
+                Attended: <strong>{totalPresent}</strong>
+              </span>
+              <span className="bg-red-50 text-red-700 font-semibold px-2.5 py-1 rounded border border-red-200">
+                Absences: <strong>{totalAbsent}</strong>
+              </span>
+            </div>
           </div>
           <Link
             to="/my-attendance"
@@ -583,7 +606,7 @@ export default function Dashboard() {
                 ? 'bg-yellow-500'
                 : 'bg-red-500'
             }`}
-            style={{ width: `${Math.min(100, overallPercentage)}%` }}
+            style={{ width: `${Math.min(100, Math.max(0, overallPercentage))}%` }}
           />
         </div>
       </div>
@@ -597,13 +620,13 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {classes && classes.length > 0 ? (
+          {classList && classList.length > 0 ? (
             <div className="space-y-3">
-              {classes.map((cls) => (
+              {classList.map((cls) => (
                 <div key={cls._id} className="p-3.5 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
                   <div>
                     <h4 className="text-sm font-bold text-gray-800">{cls.name}</h4>
-                    <p className="text-xs text-gray-500">{cls.subject} • Teacher: {cls.teacherName}</p>
+                    <p className="text-xs text-gray-500">{cls.subject} • Teacher: {cls.teacherName || cls.teacher || 'Instructor'}</p>
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
@@ -626,9 +649,9 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {upcomingWork && upcomingWork.length > 0 ? (
+          {workList && workList.length > 0 ? (
             <div className="space-y-3">
-              {upcomingWork.map((item) => (
+              {workList.map((item) => (
                 <div key={item._id} className="p-3.5 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -676,9 +699,9 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {recentAnnouncements && recentAnnouncements.length > 0 ? (
+        {announcementsList && announcementsList.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recentAnnouncements.map((ann) => (
+            {announcementsList.map((ann) => (
               <div key={ann._id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="text-sm font-bold text-gray-800">{ann.title}</h4>

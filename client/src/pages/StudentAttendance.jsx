@@ -97,11 +97,10 @@ export default function StudentAttendance() {
               />
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              Formula: (Present Classes / Total Classes Held) × 100
+              Formula: ({overall?.present ?? overall?.attended ?? 0} Present / {overall?.totalHeld ?? 0} Total Classes Held) × 100
             </p>
           </div>
 
-          
           <div className="grid grid-cols-3 gap-3 text-center sm:text-right border-t sm:border-t-0 sm:border-l border-gray-200 pt-4 sm:pt-0 sm:pl-6">
             <div className="p-3 bg-gray-50 rounded-md">
               <p className="text-xs text-gray-500">Classes Held</p>
@@ -119,23 +118,22 @@ export default function StudentAttendance() {
         </div>
       </div>
 
-      
       <div>
         <h2 className="text-base font-bold text-gray-800 mb-3">Course Breakdown</h2>
         {classes && classes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {classes.map((cls) => (
               <div
-                key={cls._id}
+                key={cls._id || cls.classId}
                 className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                      {cls.code}
+                      {cls.code || cls.classCode}
                     </span>
-                    <h3 className="text-sm font-bold text-gray-800 mt-1">{cls.name}</h3>
-                    <p className="text-xs text-gray-500">{cls.subject}</p>
+                    <h3 className="text-sm font-bold text-gray-800 mt-1">{cls.name || cls.className}</h3>
+                    <p className="text-xs text-gray-500">{cls.subject} • {cls.teacher || cls.teacherName || 'Instructor'}</p>
                   </div>
                   <span
                     className={`text-sm font-extrabold ${
