@@ -68,8 +68,8 @@ export default function Sidebar({ isOpen, onClose }) {
               <GraduationCap className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-white leading-tight">EduManage</h1>
-              <p className="text-[11px] text-blue-400 font-medium">Class Management</p>
+              <h1 className="text-sm font-bold text-white leading-tight">Class Management</h1>
+              <p className="text-[11px] text-blue-400 font-medium">System Portal</p>
             </div>
           </div>
 

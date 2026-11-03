@@ -1,7 +1,7 @@
 {
-  "name": "sms-server",
+  "name": "cms-server",
   "version": "1.0.0",
-  "description": "Student Management System API",
+  "description": "Class Management System API",
   "main": "server.js",
   "type": "module",
   "scripts": {

@@ -41,8 +41,8 @@ export default function Login() {
           <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white mx-auto mb-3">
             <GraduationCap className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">EduManage</h1>
-          <p className="text-sm text-gray-500 mt-1">Class Management System</p>
+          <h1 className="text-2xl font-bold text-gray-900">Class Management System</h1>
+          <p className="text-sm text-gray-500 mt-1">Academic & Institutional Portal</p>
         </div>
 
         {error && (

@@ -1,4 +1,4 @@
-# EduManage: Class Management System (CMS)
+# Class Management System (CMS)
 ## Official Presentation Deck & College Viva Voce Defense Guide
 
 ---
@@ -61,11 +61,11 @@ Follow this sequence during your live presentation demo:
 ## 📊 Slide-by-Slide Speaker Notes & Viva Script
 
 ### Slide 1: Title Slide (Capstone Project Defense)
-- **Title:** EduManage: Class Management System
+- **Title:** Class Management System
 - **Subtitle:** A Modern, Role-Based Full-Stack Web Platform for Academic Administration, Attendance Tracking, Coursework Distribution, and Secure Submissions
-- **Candidate:** Kirpal Singh | B.Tech Computer Science & Engineering
+- **Candidate:** Kirpal Singh | B.Tech Information Technology (IT)
 - **Talking Script:**
-  > "Good morning respected external examiner and faculty members. Today I am presenting my final project: EduManage — Class Management System. This project is a dedicated, role-based academic platform built using the MERN stack to solve common classroom administrative headaches such as fragmented communication, manual attendance calculation errors, and unsecured coursework distribution."
+  > "Good morning respected external examiner and faculty members. Today I am presenting my final project: Class Management System. This project is a dedicated, role-based academic platform built using the MERN stack to solve common classroom administrative headaches such as fragmented communication, manual attendance calculation errors, and unsecured coursework distribution."
 
 ### Slide 2: Problem Statement (The Academic Record Keeping Dilemma)
 - **Three Pain Points:**
@@ -180,7 +180,7 @@ Follow this sequence during your live presentation demo:
 - **Key Achievements:** Centralized classroom operations, eliminated paper registers, implemented strict RBAC, and created a protected file gateway.
 - **Future Scope:** Automated push/email notifications for deadlines, lecture timetable scheduler, online MCQ quiz engine, and official university PDF report exports.
 - **Talking Script:**
-  > "In conclusion, EduManage replaces fragmented, error-prone manual methods with a clean, role-based platform. For future work, we plan to add automated deadline push notifications, an online MCQ quiz module, and one-click PDF generation for university attendance records."
+  > "In conclusion, Class Management System replaces fragmented, error-prone manual methods with a clean, role-based platform. For future work, we plan to add automated deadline push notifications, an online MCQ quiz module, and one-click PDF generation for university attendance records."
 
 ### Slide 15: Q&A & Viva Voce Discussion
 - Open floor for examiner questions and live code inspection.

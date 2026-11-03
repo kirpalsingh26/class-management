@@ -1,4 +1,4 @@
-# EduManage — Class Management System
+# Class Management System
 
 > A simple, functional, and beginner-friendly web application built with the **MERN** stack (MongoDB, Express, React, Node.js) for managing classes, students, attendance, coursework, and announcements.
 
@@ -6,7 +6,7 @@
 
 ## 📌 Project Overview
 
-**EduManage** is designed for colleges and schools where teachers can manage their classrooms and coursework efficiently while students have a dedicated portal to view their attendance, syllabus notes, assignments, and class notices.
+**Class Management System** is designed for colleges and schools where teachers can manage their classrooms and coursework efficiently while students have a dedicated portal to view their attendance, syllabus notes, assignments, and class notices.
 
 ### Key Roles:
 1. **Teacher:**

@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [visibleAdminPasswords, setVisibleAdminPasswords] = useState({});
-  const [showAllAdminPasswords, setShowAllAdminPasswords] = useState(true);
+  const [showAllAdminPasswords, setShowAllAdminPasswords] = useState(false);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
@@ -167,11 +167,14 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowAllAdminPasswords(!showAllAdminPasswords)}
+                    onClick={() => {
+                      setShowAllAdminPasswords(!showAllAdminPasswords);
+                      setVisibleAdminPasswords({});
+                    }}
                     className="text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded border border-amber-200 flex items-center gap-1 transition"
                   >
                     {showAllAdminPasswords ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                    {showAllAdminPasswords ? 'Mask Passwords' : 'Show Passwords'}
+                    {showAllAdminPasswords ? 'Hide Passwords' : 'Show Passwords'}
                   </button>
                   <Link
                     to="/admin/teachers"

@@ -1,7 +1,7 @@
 {
-  "name": "student-management-system",
+  "name": "class-management-system",
   "version": "1.0.0",
-  "description": "Production-quality Student Management System SaaS",
+  "description": "Production-quality Class Management System",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",

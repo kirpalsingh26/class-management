@@ -1,9 +1,9 @@
-# 🎓 College Presentation: Class Management System (EduManage)
+# 🎓 College Presentation: Class Management System
 
 ---
 
 ## 🖥️ Slide 1: Title Slide
-- **Project Title:** EduManage — Class Management System
+- **Project Title:** Class Management System
 - **Domain:** Web Development / Full-Stack MERN
 - **Presented By:** Kirpal Singh
 - **Roll Number:** 2421217
@@ -160,7 +160,7 @@
 ---
 
 ## 🚀 Slide 12: Conclusion & Future Scope
-- **Conclusion:** EduManage delivers a robust, secure, and user-friendly Class Management System tailored to college needs without unnecessary enterprise bloat.
+- **Conclusion:** Class Management System delivers a robust, secure, and user-friendly platform tailored to college needs without unnecessary enterprise bloat.
 - **Future Enhancements:**
   - Push notifications for upcoming deadlines.
   - Timetable and lecture scheduling module.

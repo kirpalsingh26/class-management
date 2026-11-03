@@ -32,8 +32,8 @@ export default function Students() {
   const [copied, setCopied] = useState(false);
 
   const [visiblePasswords, setVisiblePasswords] = useState({});
-  const [showAllPasswords, setShowAllPasswords] = useState(true);
-  const [showModalPassword, setShowModalPassword] = useState(true);
+  const [showAllPasswords, setShowAllPasswords] = useState(false);
+  const [showModalPassword, setShowModalPassword] = useState(false);
   const [copiedPasswordId, setCopiedPasswordId] = useState(null);
 
   const fetchStudents = async () => {
@@ -65,7 +65,7 @@ export default function Students() {
     setCourse('IT');
     setPassword('password123');
     setError('');
-    setShowModalPassword(true);
+    setShowModalPassword(false);
     setIsModalOpen(true);
   };
 
@@ -118,9 +118,10 @@ export default function Students() {
   };
 
   const togglePasswordVisibility = (id) => {
+    const current = isPasswordVisible(id);
     setVisiblePasswords((prev) => ({
       ...prev,
-      [id]: prev[id] !== undefined ? !prev[id] : !showAllPasswords,
+      [id]: !current,
     }));
   };
 
@@ -129,6 +130,12 @@ export default function Students() {
       return visiblePasswords[id];
     }
     return showAllPasswords;
+  };
+
+  const handleToggleShowAll = () => {
+    const nextState = !showAllPasswords;
+    setShowAllPasswords(nextState);
+    setVisiblePasswords({});
   };
 
   const filteredStudents = students.filter((s) => {
@@ -153,7 +160,7 @@ export default function Students() {
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           <button
             type="button"
-            onClick={() => setShowAllPasswords(!showAllPasswords)}
+            onClick={handleToggleShowAll}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold border transition ${
               showAllPasswords
                 ? 'bg-amber-50 text-amber-800 border-amber-300'
@@ -161,7 +168,7 @@ export default function Students() {
             }`}
           >
             {showAllPasswords ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            {showAllPasswords ? 'Mask Passwords' : 'Show All Passwords'}
+            {showAllPasswords ? 'Hide Passwords' : 'Show All Passwords'}
           </button>
 
           <button
