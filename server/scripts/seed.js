@@ -21,12 +21,30 @@ const seedDatabase = async () => {
     await Submission.deleteMany({});
     await Announcement.deleteMany({});
 
+    const admin = await User.create({
+      name: 'System Administrator',
+      email: 'admin@cms.dev',
+      password: 'password123',
+      role: 'admin',
+      department: 'Administration',
+    });
+
     const teacher = await User.create({
       name: 'Prof. Rajesh Sharma',
       email: 'teacher@cms.dev',
       password: 'password123',
       role: 'teacher',
+      department: 'Information Technology',
       phone: '+91 98765 43210',
+    });
+
+    const teacher2 = await User.create({
+      name: 'Dr. Priya Mehta',
+      email: 'priya@cms.dev',
+      password: 'password123',
+      role: 'teacher',
+      department: 'Computer Science',
+      phone: '+91 98765 11223',
     });
 
     const studentData = [
@@ -162,7 +180,7 @@ const seedDatabase = async () => {
         code: 'AI-307',
         subject: 'Information Technology',
         description: 'Supervised and unsupervised learning, decision trees, neural network basics, regression models, and heuristic search.',
-        teacherId: teacher._id,
+        teacherId: teacher2._id,
         enrolledStudents: [kirpal._id, aarav._id, ananya._id, kabir._id, harman._id],
       },
       {
@@ -170,7 +188,7 @@ const seedDatabase = async () => {
         code: 'CC-308',
         subject: 'Information Technology',
         description: 'Virtualization, public cloud infrastructure, containerization with Docker, CI/CD pipelines, and microservices.',
-        teacherId: teacher._id,
+        teacherId: teacher2._id,
         enrolledStudents: [kirpal._id, aarav._id, rohan._id, simran._id, harman._id],
       },
       {
@@ -329,7 +347,13 @@ const seedDatabase = async () => {
       },
     ]);
 
+    console.log('=============================================');
     console.log('Seed completed successfully!');
+    console.log('Admin Login:   admin@cms.dev   / password123');
+    console.log('Teacher Login: teacher@cms.dev / password123 (Prof. Rajesh Sharma)');
+    console.log('               priya@cms.dev   / password123 (Dr. Priya Mehta)');
+    console.log('Student Login: kirpal@cms.dev  / password123 (Kirpal Singh, Roll: 2421217, IT)');
+    console.log('=============================================');
     process.exit(0);
   } catch (err) {
     console.error('Seed error:', err);

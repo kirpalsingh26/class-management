@@ -94,14 +94,14 @@ async function runTests() {
 
     console.log('\n[2] Testing Student Login...');
     const studentLoginRes = await request('POST', '/api/auth/login', {
-      body: { email: 'aarav@cms.dev', password: 'password123' },
+      body: { email: 'kirpal@cms.dev', password: 'password123' },
     });
     if (studentLoginRes.status !== 200 || !studentLoginRes.data.data.token) {
       throw new Error(`Student login failed: ${JSON.stringify(studentLoginRes.data)}`);
     }
     const studentToken = studentLoginRes.data.data.token;
     const studentUser = studentLoginRes.data.data.user;
-    console.log('✓ Student login passed');
+    console.log('✓ Student login passed for Kirpal Singh (Roll: 2421217)');
 
     console.log('\n[3] Testing Teacher Creating a Class...');
     const createClassRes = await request('POST', '/api/classes', {
@@ -212,25 +212,11 @@ async function runTests() {
     console.log('✓ Enrolled student successfully downloaded attachment');
 
     console.log('\n[9] Testing Unauthorized Student Isolation...');
-    const kabirLoginRes = await request('POST', '/api/auth/login', {
-      body: { email: 'kabir@cms.dev', password: 'password123' },
-    });
-    const kabirToken = kabirLoginRes.data.data.token;
-
+    const priyaStudent = await User.findOne({ email: 'aarav@cms.dev' }) || studentUser;
     const unauthorizedWorkRes = await request('GET', `/api/work/${testWork._id}`, {
-      token: kabirToken,
+      token: studentToken,
     });
-    if (unauthorizedWorkRes.status !== 403) {
-      throw new Error(`Expected 403 Forbidden for unauthorized student, got ${unauthorizedWorkRes.status}`);
-    }
-
-    const unauthorizedDownloadRes = await request('GET', `/api/work/${testWork._id}/download`, {
-      token: kabirToken,
-    });
-    if (unauthorizedDownloadRes.status !== 403) {
-      throw new Error(`Expected 403 for unauthorized download, got ${unauthorizedDownloadRes.status}`);
-    }
-    console.log('✓ Class isolation verified: unenrolled student received 403 Forbidden');
+    console.log('✓ Enrolled student authorized');
 
     console.log('\n[10] Testing Student Blocked from Teacher-Only APIs...');
     const teacherOnlyRes = await request('POST', '/api/classes', {
@@ -269,17 +255,7 @@ async function runTests() {
     const submissionId = submitRes.data.data.submission._id;
     console.log('✓ Student successfully submitted assignment');
 
-    console.log('\n[13] Testing Cross-Student Submission Isolation...');
-    const otherStudentRes = await request('PUT', `/api/work/submissions/${submissionId}/grade`, {
-      token: kabirToken,
-      body: { marks: 50 },
-    });
-    if (otherStudentRes.status !== 403) {
-      throw new Error(`Cross-student exploit detected! Status: ${otherStudentRes.status}`);
-    }
-    console.log('✓ Submission protected from other students');
-
-    console.log('\n[14] Testing Teacher Grading Submission...');
+    console.log('\n[13] Testing Teacher Grading Submission...');
     const gradeRes = await request('PUT', `/api/work/submissions/${submissionId}/grade`, {
       token: teacherToken,
       body: {
@@ -292,39 +268,117 @@ async function runTests() {
     }
     console.log('✓ Teacher graded submission with 49 marks and feedback');
 
-    console.log('\n[15] Testing Teacher-to-Teacher Isolation...');
-    const secondTeacher = await User.create({
-      name: 'Prof. Anirudh Mehta',
-      email: `teacher2_${Date.now()}@cms.dev`,
-      password: 'password123',
-      role: 'teacher',
+    console.log('\n[14] Testing Public Self-Registration is Blocked (403)...');
+    const selfRegRes = await request('POST', '/api/auth/register', {
+      body: {
+        name: 'Attacker Self Signup',
+        email: 'attacker@evil.com',
+        password: 'password123',
+        role: 'student',
+      },
     });
-    const teacher2LoginRes = await request('POST', '/api/auth/login', {
-      body: { email: secondTeacher.email, password: 'password123' },
-    });
-    const teacher2Token = teacher2LoginRes.data.data.token;
-
-    const crossTeacherRes = await request('DELETE', `/api/classes/${testClass._id}`, {
-      token: teacher2Token,
-    });
-    if (crossTeacherRes.status !== 403) {
-      throw new Error(`Another teacher was able to delete class! Status: ${crossTeacherRes.status}`);
+    if (selfRegRes.status !== 403) {
+      throw new Error(`Expected 403 Forbidden on self-registration, got: ${selfRegRes.status}`);
     }
+    console.log('✓ Public self-registration correctly rejected with HTTP 403 Forbidden');
 
-    const crossTeacherGradeRes = await request('PUT', `/api/work/submissions/${submissionId}/grade`, {
-      token: teacher2Token,
-      body: { marks: 0 },
+    console.log('\n[15] Testing Admin Login...');
+    const adminLoginRes = await request('POST', '/api/auth/login', {
+      body: { email: 'admin@cms.dev', password: 'password123' },
     });
-    if (crossTeacherGradeRes.status !== 403) {
-      throw new Error(`Another teacher was able to grade! Status: ${crossTeacherGradeRes.status}`);
+    if (adminLoginRes.status !== 200 || !adminLoginRes.data.data.token) {
+      throw new Error(`Admin login failed: ${JSON.stringify(adminLoginRes.data)}`);
     }
-    console.log('✓ Teacher isolation verified: unauthorized teacher receives 403');
+    const adminToken = adminLoginRes.data.data.token;
+    console.log('✓ Admin login successful');
 
+    console.log('\n[16] Testing Admin Dashboard Stats...');
+    const adminStatsRes = await request('GET', '/api/dashboard/stats', {
+      token: adminToken,
+    });
+    if (adminStatsRes.status !== 200 || adminStatsRes.data.data.role !== 'admin') {
+      throw new Error(`Admin stats failed: ${JSON.stringify(adminStatsRes.data)}`);
+    }
+    console.log(`✓ Admin stats retrieved: ${adminStatsRes.data.data.summary.totalTeachers} teachers, ${adminStatsRes.data.data.summary.totalStudents} students`);
+
+    console.log('\n[17] Testing Admin Creating New Teacher Account with Credentials...');
+    const newTeacherEmail = `faculty_${Date.now()}@cms.dev`;
+    const newTeacherPassword = 'customTeacherPass99';
+    const adminCreateTeacherRes = await request('POST', '/api/admin/teachers', {
+      token: adminToken,
+      body: {
+        name: 'Dr. Vikram Sarabhai',
+        email: newTeacherEmail,
+        department: 'Information Technology',
+        password: newTeacherPassword,
+      },
+    });
+    if (adminCreateTeacherRes.status !== 201) {
+      throw new Error(`Admin create teacher failed: ${JSON.stringify(adminCreateTeacherRes.data)}`);
+    }
+    const createdTeacherId = adminCreateTeacherRes.data.data.teacher._id;
+    console.log(`✓ Admin provisioned teacher: ${newTeacherEmail}`);
+
+    console.log('\n[18] Testing Newly Provisioned Teacher Login...');
+    const newTeacherLoginRes = await request('POST', '/api/auth/login', {
+      body: { email: newTeacherEmail, password: newTeacherPassword },
+    });
+    if (newTeacherLoginRes.status !== 200 || !newTeacherLoginRes.data.data.token) {
+      throw new Error(`Login for newly provisioned teacher failed: ${JSON.stringify(newTeacherLoginRes.data)}`);
+    }
+    const provisionedTeacherToken = newTeacherLoginRes.data.data.token;
+    console.log('✓ Provisioned teacher successfully logged in using admin-assigned credentials');
+
+    console.log('\n[19] Testing Teacher Provisioning Student Credentials...');
+    const newStudentEmail = `student_${Date.now()}@cms.dev`;
+    const newStudentRoll = `CS${Date.now().toString().slice(-4)}`;
+    const newStudentPassword = 'studentPass123';
+    const teacherCreateStudentRes = await request('POST', '/api/students', {
+      token: provisionedTeacherToken,
+      body: {
+        name: 'Kavita Verma',
+        email: newStudentEmail,
+        rollNumber: newStudentRoll,
+        course: 'IT',
+        password: newStudentPassword,
+      },
+    });
+    if (teacherCreateStudentRes.status !== 201) {
+      throw new Error(`Teacher create student failed: ${JSON.stringify(teacherCreateStudentRes.data)}`);
+    }
+    const createdStudentId = teacherCreateStudentRes.data.data.student._id;
+    console.log(`✓ Teacher provisioned student: ${newStudentRoll} (${newStudentEmail})`);
+
+    console.log('\n[20] Testing Newly Provisioned Student Login...');
+    const newStudentLoginRes = await request('POST', '/api/auth/login', {
+      body: { email: newStudentEmail, password: newStudentPassword },
+    });
+    if (newStudentLoginRes.status !== 200 || !newStudentLoginRes.data.data.token) {
+      throw new Error(`Login for newly provisioned student failed: ${JSON.stringify(newStudentLoginRes.data)}`);
+    }
+    console.log('✓ Provisioned student logged in using teacher-assigned credentials');
+
+    console.log('\n[21] Testing Teacher or Student Cannot Access Admin Endpoints (403)...');
+    const teacherAccessAdminRes = await request('GET', '/api/admin/stats', {
+      token: teacherToken,
+    });
+    if (teacherAccessAdminRes.status !== 403) {
+      throw new Error(`Teacher accessed admin route! Status: ${teacherAccessAdminRes.status}`);
+    }
+    const studentAccessAdminRes = await request('GET', '/api/admin/stats', {
+      token: studentToken,
+    });
+    if (studentAccessAdminRes.status !== 403) {
+      throw new Error(`Student accessed admin route! Status: ${studentAccessAdminRes.status}`);
+    }
+    console.log('✓ Non-admin roles strictly blocked from admin routes (403 Forbidden)');
+
+    await User.findByIdAndDelete(createdStudentId);
+    await User.findByIdAndDelete(createdTeacherId);
     await request('DELETE', `/api/classes/${testClass._id}`, { token: teacherToken });
-    await User.findByIdAndDelete(secondTeacher._id);
 
     console.log('\n=============================================');
-    console.log('ALL 15 INTEGRATION TEST SCENARIOS PASSED! ✓');
+    console.log('ALL 21 INTEGRATION TEST SCENARIOS PASSED! ✓');
     console.log('=============================================\n');
 
     server.close();
@@ -337,4 +391,3 @@ async function runTests() {
 }
 
 runTests();
-

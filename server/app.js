@@ -14,6 +14,7 @@ import workRoutes from './routes/workRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { errorHandler, notFound } from './utils/errorHandler.js';
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/work', workRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -1,16 +1,13 @@
 import * as authService from '../services/authService.js';
 import { generateToken } from '../utils/token.js';
 import { asyncHandler } from '../utils/errorHandler.js';
+import AppError from '../utils/AppError.js';
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, rollNumber, course } = req.body;
-  const user = await authService.registerUser({ name, email, password, rollNumber, course });
-
-  res.status(201).json({
-    success: true,
-    message: 'Registration successful. Please log in.',
-    data: { user },
-  });
+  throw new AppError(
+    'Self-registration is disabled. Accounts are provisioned exclusively by Administrators and Teachers.',
+    403
+  );
 });
 
 export const login = asyncHandler(async (req, res) => {

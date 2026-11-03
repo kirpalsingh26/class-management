@@ -65,7 +65,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('token');
   };
 
-  const isTeacher = user?.role === 'teacher' || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
+  const isTeacher = user?.role === 'teacher';
   const isStudent = user?.role === 'student';
 
   return (
@@ -75,6 +76,7 @@ export function AuthProvider({ children }) {
         token,
         loading,
         isAuthenticated: Boolean(user && token),
+        isAdmin,
         isTeacher,
         isStudent,
         login,

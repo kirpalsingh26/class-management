@@ -6,7 +6,9 @@ import Modal from '../components/Modal';
 import { BookOpen, Plus, Users, Edit, Trash2, Search, ArrowRight } from 'lucide-react';
 
 export default function Classes() {
-  const { isTeacher } = useAuth();
+  const { isTeacher, isAdmin } = useAuth();
+  const canManage = isTeacher || isAdmin;
+
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,20 +107,21 @@ export default function Classes() {
 
   return (
     <div className="space-y-6">
-      
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
-            {isTeacher ? 'My Classes' : 'Enrolled Classes'}
+            {isAdmin ? 'All Institutional Classes' : isTeacher ? 'My Classes' : 'Enrolled Classes'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            {isTeacher
+            {isAdmin
+              ? 'Oversee institution courses, student rosters, and faculty assignments.'
+              : isTeacher
               ? 'Create and manage classrooms, view enrolled students, and assign work.'
               : 'View your course subjects and teacher details.'}
           </p>
         </div>
 
-        {isTeacher && (
+        {canManage && (
           <button
             type="button"
             onClick={handleOpenCreate}
@@ -130,7 +133,6 @@ export default function Classes() {
         )}
       </div>
 
-      
       <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center gap-3">
         <Search className="w-4 h-4 text-gray-400" />
         <input
@@ -142,7 +144,6 @@ export default function Classes() {
         />
       </div>
 
-      
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -159,7 +160,7 @@ export default function Classes() {
                   <span className="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                     {cls.code}
                   </span>
-                  {isTeacher && (
+                  {canManage && (
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
@@ -182,7 +183,9 @@ export default function Classes() {
                 </div>
 
                 <h3 className="text-base font-bold text-gray-800">{cls.name}</h3>
-                <p className="text-xs text-gray-500 font-medium mt-0.5">Subject: {cls.subject}</p>
+                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                  Subject: {cls.subject} {cls.teacherId?.name ? `• Faculty: ${cls.teacherId.name}` : ''}
+                </p>
                 {cls.description && (
                   <p className="text-xs text-gray-600 mt-2 line-clamp-2">{cls.description}</p>
                 )}
@@ -198,7 +201,7 @@ export default function Classes() {
                   to={`/classes/${cls._id}`}
                   className="text-blue-600 font-semibold hover:underline flex items-center gap-1"
                 >
-                  {isTeacher ? 'Manage Roster' : 'View Class'} <ArrowRight className="w-3.5 h-3.5" />
+                  {canManage ? 'Manage Roster' : 'View Class'} <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
@@ -214,7 +217,6 @@ export default function Classes() {
         </div>
       )}
 
-      
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

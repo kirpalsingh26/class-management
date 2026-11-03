@@ -7,7 +7,53 @@ import Announcement from '../models/Announcement.js';
 import { asyncHandler } from '../utils/errorHandler.js';
 
 export const getDashboardStats = asyncHandler(async (req, res) => {
-  if (req.user.role === 'teacher' || req.user.role === 'admin') {
+  if (req.user.role === 'admin') {
+    const [
+      totalTeachers,
+      totalStudents,
+      totalClasses,
+      totalAttendance,
+      totalWorks,
+      teachers,
+      classes,
+      recentAnnouncements,
+    ] = await Promise.all([
+      User.countDocuments({ role: 'teacher' }),
+      User.countDocuments({ role: 'student' }),
+      Class.countDocuments(),
+      Attendance.countDocuments(),
+      Work.countDocuments(),
+      User.find({ role: 'teacher' }).select('-password').sort({ createdAt: -1 }).lean(),
+      Class.find().populate('teacherId', 'name email department').sort({ createdAt: -1 }).lean(),
+      Announcement.find().populate('teacherId', 'name email').sort({ createdAt: -1 }).limit(4).lean(),
+    ]);
+
+    return res.json({
+      success: true,
+      data: {
+        role: 'admin',
+        summary: {
+          totalTeachers,
+          totalStudents,
+          totalClasses,
+          totalAttendance,
+          totalWorks,
+        },
+        teachers,
+        classes: classes.map((c) => ({
+          _id: c._id,
+          name: c.name,
+          code: c.code,
+          subject: c.subject,
+          teacherName: c.teacherId?.name || 'Unassigned',
+          studentCount: c.enrolledStudents ? c.enrolledStudents.length : 0,
+        })),
+        recentAnnouncements,
+      },
+    });
+  }
+
+  if (req.user.role === 'teacher') {
     const teacherId = req.user._id;
 
     const classes = await Class.find({ teacherId }).lean();

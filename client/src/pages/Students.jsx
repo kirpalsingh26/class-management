@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
-import { Users, UserPlus, Search, BookOpen } from 'lucide-react';
+import { Users, UserPlus, Search, BookOpen, CheckCircle, Copy, X } from 'lucide-react';
 
 export default function Students() {
   const [students, setStudents] = useState([]);
@@ -18,6 +18,8 @@ export default function Students() {
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [provisionNotice, setProvisionNotice] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const fetchStudents = async () => {
     try {
@@ -47,12 +49,19 @@ export default function Students() {
     setSaving(true);
 
     try {
+      const activePassword = password.trim() || 'password123';
       await api.post('/students', {
         name,
         email,
         rollNumber,
         course,
-        password,
+        password: activePassword,
+      });
+      setProvisionNotice({
+        name,
+        email,
+        rollNumber,
+        password: activePassword,
       });
       setIsModalOpen(false);
       setName('');
@@ -68,6 +77,14 @@ export default function Students() {
     }
   };
 
+  const handleCopyCredentials = () => {
+    if (!provisionNotice) return;
+    const text = `Student Login Credentials:\nName: ${provisionNotice.name}\nRoll: ${provisionNotice.rollNumber}\nEmail: ${provisionNotice.email}\nPassword: ${provisionNotice.password}\nPortal: ${window.location.origin}/login`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
   const filteredStudents = students.filter((s) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -79,12 +96,11 @@ export default function Students() {
 
   return (
     <div className="space-y-6">
-      
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Student Directory</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Browse registered student accounts and review their enrolled subjects.
+            Browse registered student accounts, enroll students, and provide login credentials.
           </p>
         </div>
 
@@ -98,9 +114,45 @@ export default function Students() {
         </button>
       </div>
 
-      
+      {provisionNotice && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-green-900">
+                Student Account Enrolled & Provisioned!
+              </p>
+              <p className="text-xs text-green-800 mt-0.5">
+                Provide these login credentials to <strong>{provisionNotice.name}</strong> (Roll: {provisionNotice.rollNumber}):
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2 font-mono text-xs text-gray-800 bg-white px-3 py-1.5 rounded border border-green-200">
+                <span>Email: <strong>{provisionNotice.email}</strong></span>
+                <span>•</span>
+                <span>Password: <strong>{provisionNotice.password}</strong></span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <button
+              type="button"
+              onClick={handleCopyCredentials}
+              className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded flex items-center gap-1 transition"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              {copied ? 'Copied!' : 'Copy Credentials'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setProvisionNotice(null)}
+              className="p-1.5 text-gray-400 hover:text-gray-600 rounded"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
           <input
@@ -112,7 +164,6 @@ export default function Students() {
           />
         </div>
 
-        
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <span className="text-xs font-semibold text-gray-500 whitespace-nowrap">Filter Class:</span>
           <select
@@ -130,7 +181,6 @@ export default function Students() {
         </div>
       </div>
 
-      
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-12">
@@ -144,25 +194,25 @@ export default function Students() {
                   <th className="py-3 px-4">Roll Number</th>
                   <th className="py-3 px-4">Student Name</th>
                   <th className="py-3 px-4">Course</th>
-                  <th className="py-3 px-4">Email</th>
-                  <th className="py-3 px-4">Enrolled Classes</th>
+                  <th className="py-3 px-4">Email Address</th>
+                  <th className="py-3 px-4">Enrolled Subjects</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredStudents.map((student) => (
                   <tr key={student._id} className="hover:bg-gray-50 transition">
-                    <td className="py-3 px-4 font-mono font-medium text-gray-800">
-                      {student.rollNumber || '—'}
+                    <td className="py-3 px-4 font-mono font-semibold text-gray-900">
+                      {student.rollNumber || 'N/A'}
                     </td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">
+                    <td className="py-3 px-4 font-semibold text-gray-800">
                       {student.name}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded text-[11px] border border-blue-200">
+                      <span className="bg-blue-50 text-blue-700 font-medium px-2 py-0.5 rounded text-[11px]">
                         {student.course || 'IT'}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-gray-500">
+                    <td className="py-3 px-4 text-gray-500 font-mono">
                       {student.email}
                     </td>
                     <td className="py-3 px-4">
@@ -171,14 +221,14 @@ export default function Students() {
                           {student.enrolledClasses.map((cls) => (
                             <span
                               key={cls._id}
-                              className="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200"
+                              className="text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200"
                             >
-                              {cls.name}
+                              {cls.code}
                             </span>
                           ))}
                         </div>
                       ) : (
-                        <span className="text-[11px] text-gray-400">Not enrolled in any class</span>
+                        <span className="text-[11px] text-gray-400">None</span>
                       )}
                     </td>
                   </tr>
@@ -188,16 +238,17 @@ export default function Students() {
           </div>
         ) : (
           <div className="p-8 text-center text-gray-500 text-xs">
-            {searchTerm ? 'No students match your search criteria.' : 'No students found.'}
+            {searchTerm || selectedClassFilter
+              ? 'No students found matching your filters.'
+              : 'No students enrolled yet. Click "Add Student" to register one.'}
           </div>
         )}
       </div>
 
-      
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Register New Student"
+        title="Provision & Enroll New Student"
       >
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-md">
@@ -208,7 +259,7 @@ export default function Students() {
         <form onSubmit={handleAddStudent} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Full Name
+              Full Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -222,7 +273,7 @@ export default function Students() {
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Email Address
+              Email Address <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -236,14 +287,14 @@ export default function Students() {
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Roll Number
+              Roll Number <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               required
               value={rollNumber}
               onChange={(e) => setRollNumber(e.target.value)}
-              placeholder="e.g. CS2026-009"
+              placeholder="e.g. 2421218"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
@@ -264,16 +315,20 @@ export default function Students() {
 
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
-              Default Password
+              Initial Password <span className="text-red-500">*</span>
             </label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Default login password"
+              placeholder="Initial login password"
               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-blue-700">
+            As a faculty member, you are assigning these login credentials directly to the student. The student will use this email and password to log in.
           </div>
 
           <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">

@@ -8,7 +8,9 @@ import { asyncHandler } from '../utils/errorHandler.js';
 
 export const getClasses = asyncHandler(async (req, res) => {
   let query = {};
-  if (req.user.role === 'teacher' || req.user.role === 'admin') {
+  if (req.user.role === 'admin') {
+    query = {};
+  } else if (req.user.role === 'teacher') {
     query = { teacherId: req.user._id };
   } else {
     query = { enrolledStudents: req.user._id };

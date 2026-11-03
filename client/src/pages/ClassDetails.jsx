@@ -17,7 +17,8 @@ import {
 
 export default function ClassDetails() {
   const { id } = useParams();
-  const { isTeacher } = useAuth();
+  const { isTeacher, isAdmin } = useAuth();
+  const canManage = isTeacher || isAdmin;
 
   const [classData, setClassData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -133,14 +134,12 @@ export default function ClassDetails() {
 
   return (
     <div className="space-y-6">
-      
       <div>
         <Link to="/classes" className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-blue-600">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to all classes
         </Link>
       </div>
 
-      
       <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -152,11 +151,11 @@ export default function ClassDetails() {
           <h1 className="text-2xl font-bold text-gray-800">{classData.name}</h1>
           <p className="text-sm text-gray-600 mt-1">{classData.description || 'No description provided.'}</p>
           <p className="text-xs text-gray-400 mt-2">
-            Teacher: <span className="font-semibold text-gray-700">{classData.teacherId?.name || 'Instructor'}</span>
+            Faculty: <span className="font-semibold text-gray-700">{classData.teacherId?.name || 'Instructor'}</span>
           </p>
         </div>
 
-        {isTeacher && (
+        {canManage && (
           <div className="flex flex-wrap gap-2">
             <Link
               to={`/attendance?classId=${classData._id}`}
@@ -177,9 +176,7 @@ export default function ClassDetails() {
         )}
       </div>
 
-      
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        
         <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-gray-500" />
@@ -202,16 +199,15 @@ export default function ClassDetails() {
           </div>
         </div>
 
-        
         {filteredStudents.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-gray-600">
-              <thead className="bg-gray-100 text-gray-700 font-semibold uppercase tracking-wider text-[11px] border-b border-gray-200">
+              <thead className="bg-gray-100 text-gray-700 uppercase tracking-wider text-[11px] border-b border-gray-200 font-semibold">
                 <tr>
-                  <th className="py-3 px-4">Roll Number</th>
+                  <th className="py-3 px-4">Roll No</th>
                   <th className="py-3 px-4">Student Name</th>
-                  <th className="py-3 px-4">Email</th>
-                  {isTeacher && <th className="py-3 px-4 text-right">Actions</th>}
+                  <th className="py-3 px-4">Email Address</th>
+                  {canManage && <th className="py-3 px-4 text-right">Action</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -226,7 +222,7 @@ export default function ClassDetails() {
                     <td className="py-3 px-4 text-gray-500">
                       {student.email}
                     </td>
-                    {isTeacher && (
+                    {canManage && (
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
@@ -249,7 +245,6 @@ export default function ClassDetails() {
         )}
       </div>
 
-      
       <Modal
         isOpen={isEnrollModalOpen}
         onClose={() => setIsEnrollModalOpen(false)}
@@ -272,7 +267,6 @@ export default function ClassDetails() {
             Select an existing registered student account to add them to this class roster.
           </p>
 
-          
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
             <input
@@ -284,7 +278,6 @@ export default function ClassDetails() {
             />
           </div>
 
-          
           <div className="border border-gray-200 rounded-md max-h-60 overflow-y-auto divide-y divide-gray-100">
             {unenrolledCandidates.length > 0 ? (
               unenrolledCandidates.map((candidate) => (

@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    department: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     phone: {
       type: String,
       trim: true,
